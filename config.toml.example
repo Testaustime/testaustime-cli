@@ -1,0 +1,2 @@
+token="YourTestaustimeAuthToken" # Required
+apiurl="https://YourTestaustimeInstance.fi"
