@@ -2,39 +2,52 @@ package apiEngine
 
 import (
 	"encoding/json"
-	"time"
 
 	"github.com/romeq/testaustime-cli/utils"
 )
 
 type User struct {
-	id         int
-	Username   string
-	RegTime    time.Time
-	FriendCode string
+	Id         int
+	RegTime    DateFormat `json:"registration_time"`
+	Username   string     `json:"username"`
+	FriendCode string     `json:"friend_code"`
 }
 
-func (a *Api) GetProfile() User {
-	res := a.makeRequest("users/@me")
+func (a *Api) GetProfile() (user User) {
+	res := a.getRequest("users/@me")
 	verifyRequest(res.StatusCode, 200)
 	defer res.Body.Close()
 
-	responseJson := struct {
-		Id                int
-		Friend_code       string
-		Username          string
-		Registration_time string
+	utils.Check(json.NewDecoder(res.Body).Decode(&user))
+	return user
+}
+
+func (a *Api) GetAuthtoken() string {
+	return a.token
+}
+
+func (a *Api) NewAuthtoken() string {
+	res := a.postRequest("auth/regenerate")
+	verifyRequest(res.StatusCode, 200)
+	defer res.Body.Close()
+
+	response := struct {
+		Token string
 	}{}
-	jsonDecoder := json.NewDecoder(res.Body)
-	jsonDecoder.Decode(&responseJson)
+	utils.Check(json.NewDecoder(res.Body).Decode(&response))
 
-    userRegistrationTime, err := time.Parse(api_dateformat, responseJson.Registration_time)
-    utils.Check(err)
+	return response.Token
+}
 
-	return User{
-		responseJson.Id,
-		responseJson.Username,
-		userRegistrationTime,
-		responseJson.Friend_code,
-	}
+func (a *Api) NewFriendcode() string {
+	res := a.postRequest("friends/regenerate")
+	verifyRequest(res.StatusCode, 200)
+	defer res.Body.Close()
+
+	response := struct {
+		Friend_code string
+	}{}
+	utils.Check(json.NewDecoder(res.Body).Decode(&response))
+
+	return response.Friend_code
 }

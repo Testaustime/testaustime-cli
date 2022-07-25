@@ -2,35 +2,14 @@ package datahelper
 
 import (
 	"fmt"
-	"time"
 
 	"github.com/romeq/testaustime-cli/apiEngine"
 	"github.com/romeq/testaustime-cli/logger"
 )
 
-func ShowProfile(user apiEngine.User) {
-	printField("Username", user.Username, 32)
-	printField("Registration date", user.RegTime.Format(time.RFC1123), 37)
-	printField("Friend code", "ttfc_"+user.FriendCode, 37)
-}
-
-func ShowStatistics(stats apiEngine.Statistics) {
-	printBold("Coding statistics")
-	printField("Today", rawTimeToHumanReadable(stats.Today), 32)
-	printField("Last week", rawTimeToHumanReadable(stats.LastWeek), 37)
-	printField("Last month", rawTimeToHumanReadable(stats.LastMonth), 37)
-	printField("All time", rawTimeToHumanReadable(stats.AllTime), 37)
-
-	printBold("\nTop 10 languages")
-	showList(stats.TopLanguages)
-
-	printBold("\nTop 10 projects")
-	showList(stats.TopProjects)
-}
-
 func showList(list apiEngine.TopStatsList) {
 	for i, item := range list {
-		if i >= 10 {
+		if i >= 5 {
 			break
 		}
 
@@ -45,6 +24,7 @@ func showList(list apiEngine.TopStatsList) {
 		printField(item.Name, rawTimeToHumanReadable(item.Time), color)
 	}
 }
+
 func rawTimeToHumanReadable(minutesCoded float32) string {
 	var daysCoded, hoursCoded int
 	remainderMinutes := int(minutesCoded)
@@ -69,9 +49,9 @@ func rawTimeToHumanReadable(minutesCoded float32) string {
 
 func printField(key string, value any, color int) {
 	if logger.ColorsEnabled {
-		fmt.Println(fmt.Sprintf("\033[%dm%s\033[0m: %s", color, key, value))
+		fmt.Printf("\033[%dm%s\033[0m: %s\n", color, key, value)
 	} else {
-		fmt.Println(fmt.Sprintf("%s: %s", key, value))
+		fmt.Printf("%s: %s\n", key, value)
 	}
 }
 

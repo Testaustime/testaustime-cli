@@ -4,13 +4,17 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strings"
 )
 
 var errLogger *log.Logger = log.New(os.Stderr, "", log.LUTC)
 var ColorsEnabled bool = true
 
 func Error(err error) {
-	logMessage(errLogger, fmt.Sprint(coloredType("AARGH, Error!", 31), err))
+	logMessage(errLogger, fmt.Sprint(
+		coloredType("AARGH, Error!", 31),
+		strings.ToLower(err.Error()),
+	))
 	os.Exit(1)
 }
 

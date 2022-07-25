@@ -2,6 +2,7 @@ package apiEngine
 
 import (
 	"encoding/json"
+	"fmt"
 	"sort"
 	"time"
 
@@ -13,24 +14,16 @@ type topStats struct {
 	Name string
 	Time float32
 }
+
 type TopStatsList []topStats
 
-func (s *TopStatsList) SortByTime() {
-	sortedArr := *s
-	compareTime := func(i, j int) bool {
-		return sortedArr[i].Time > sortedArr[j].Time
-	}
-
-	sort.Slice(*s, compareTime)
-}
-
 type heartbeatStruct struct {
-	Start_time   string
-	Duration     int
-	Project_name string
-	Language     string
-	Editor_name  string
-	Hostname     string
+	StartTime   string `json:"start_time"`
+	EditorName  string `json:"editor_name"`
+	ProjectName string `json:"project_name"`
+	Duration    int
+	Language    string
+	Hostname    string
 }
 type apiresponse []heartbeatStruct
 
@@ -44,14 +37,23 @@ type Statistics struct {
 	TopProjects  TopStatsList
 }
 
-func (a *Api) GetStatistics() Statistics {
-	res := a.makeRequest("users/@me/activity/data")
+func (s *TopStatsList) SortByTime() TopStatsList {
+	sortedArr := *s
+	sort.Slice(sortedArr, func(i, j int) bool {
+		return sortedArr[i].Time > sortedArr[j].Time
+	})
+
+	return sortedArr
+}
+
+func (a *Api) GetStatistics(username string) Statistics {
+	res := a.getRequest(fmt.Sprintf("users/%s/activity/data", utils.StringOr(username, "@me")))
 	verifyRequest(res.StatusCode, 200)
 	defer res.Body.Close()
 
 	var responseJson apiresponse
-	jsonDecoder := json.NewDecoder(res.Body)
-	jsonDecoder.Decode(&responseJson)
+	utils.Check(json.NewDecoder(res.Body).Decode(&responseJson))
+
 	return calculateCodingStatistics(responseJson)
 }
 
@@ -62,20 +64,20 @@ func calculateCodingStatistics(rawdata apiresponse) (codestats Statistics) {
 			continue
 		}
 
-		getTopLanguages(heartbeat, &codestats)
-		getTopProjects(heartbeat, &codestats)
+		getLatestLanguages(heartbeat, &codestats)
+		getLatestProjects(heartbeat, &codestats)
 
-		parsedTime, err := time.Parse(api_dateformat, heartbeat.Start_time)
+		parsedTime, err := time.Parse(ctLayout, heartbeat.StartTime)
 		utils.Check(err)
 
 		elapsed := timenow.Sub(parsedTime)
 		elapsedHours := elapsed.Hours()
 		switch {
-		case elapsedHours < 24:
+		case elapsedHours <= 24:
 			codestats.Today += float32(heartbeat.Duration) / 60.0
-		case elapsedHours < 24*7:
+		case elapsedHours <= 24*7:
 			codestats.LastWeek += float32(heartbeat.Duration) / 60.0
-		case elapsedHours < 24*30:
+		case elapsedHours <= 24*30:
 			codestats.LastMonth += float32(heartbeat.Duration) / 60.0
 		}
 		codestats.AllTime += float32(heartbeat.Duration) / 60.0
@@ -84,35 +86,35 @@ func calculateCodingStatistics(rawdata apiresponse) (codestats Statistics) {
 	return codestats
 }
 
-func getTopLanguages(heartbeat heartbeatStruct, codestats *Statistics) {
-	getTop(heartbeat, &heartbeat.Language, codestats, &codestats.TopLanguages)
+func getLatestLanguages(heartbeat heartbeatStruct, codestats *Statistics) {
+	getLatest(heartbeat, &heartbeat.Language, codestats, &codestats.TopLanguages)
 }
 
-func getTopProjects(heartbeat heartbeatStruct, codestats *Statistics) {
-	getTop(heartbeat, &heartbeat.Project_name, codestats, &codestats.TopProjects)
+func getLatestProjects(heartbeat heartbeatStruct, codestats *Statistics) {
+	getLatest(heartbeat, &heartbeat.ProjectName, codestats, &codestats.TopProjects)
 }
 
-func getTop(
+func getLatest(
 	heartbeat heartbeatStruct,
-	y *string,
+	elName *string,
 	codestats *Statistics,
-	x *TopStatsList,
+	itemsPointer *TopStatsList,
 ) {
-	z := *x
+	items := *itemsPointer
 	found := false
-	for i, itemStats := range z {
-		if *y == itemStats.Name {
-			z[i].Time += float32(heartbeat.Duration / 60)
+	for i, itemStats := range items {
+		if *elName == itemStats.Name {
+			items[i].Time += float32(heartbeat.Duration / 60)
 			found = true
 			break
 		}
 	}
 	if !found {
-		z = append(z, topStats{
-			*y,
+		items = append(items, topStats{
+			*elName,
 			float32(heartbeat.Duration / 60),
 		})
 	}
-	z.SortByTime()
-	*x = z
+	items = items.SortByTime()
+	*itemsPointer = items
 }

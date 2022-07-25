@@ -11,15 +11,30 @@ import (
 )
 
 type Config struct {
+	file   string
 	Token  string
 	ApiUrl string
 }
 
-func New(token string, apiUrl string) Config {
+func New(file, token, apiUrl string) Config {
 	return Config{
+		file,
 		token,
 		apiUrl,
 	}
+}
+
+func (c *Config) UpdateField(field *string, newValue string) {
+	*field = newValue
+
+	fhandle, err := os.OpenFile(c.file, os.O_WRONLY|os.O_CREATE, 0644)
+	utils.Check(err)
+	defer fhandle.Close()
+
+	utils.Check(toml.NewEncoder(fhandle).Encode(map[string]string{
+		"token":  c.Token,
+		"apiurl": c.ApiUrl,
+	}))
 }
 
 func GetConfiguration(alternateConfigFile string) (config Config) {
@@ -29,12 +44,12 @@ func GetConfiguration(alternateConfigFile string) (config Config) {
 	utils.Check(err)
 	checkConfiguration(&m)
 
-	return New(config.Token, config.ApiUrl)
+	return New(configFile, config.Token, config.ApiUrl)
 }
 
 func checkConfiguration(m *toml.MetaData) {
 	if !m.IsDefined("token") {
-		logger.Error(errors.New("Authentication token was not found from the configuration file."))
+		logger.Error(errors.New("Authentication token was not found in the configuration file."))
 	}
 }
 
