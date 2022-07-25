@@ -12,33 +12,13 @@ type Command struct {
 	SubCommands []SubCommand
 }
 
-func AccountUsage() {
+func CommandUsage(command Command) {
 	fmt.Print(
-		commandUsage("account"),
+		formatUsage(command.Name),
 		"\n",
 		flags(),
 		"\n",
-		formatSubCommands(&Commands[0].SubCommands),
-	)
-}
-
-func StatisticsUsage() {
-	fmt.Print(
-		commandUsage("statistics"),
-		"\n",
-		flags(),
-		"\n",
-		formatSubCommands(&Commands[1].SubCommands),
-	)
-}
-
-func FriendsUsage() {
-	fmt.Print(
-		commandUsage("statistics"),
-		"\n",
-		flags(),
-		"\n",
-		formatSubCommands(&Commands[2].SubCommands),
+		formatSubCommands(&command.SubCommands),
 	)
 }
 
@@ -74,7 +54,7 @@ func formatSubCommands(c *[]SubCommand) (result string) {
 	return result + "\n"
 }
 
-func commandUsage(command string) string {
+func formatUsage(command string) string {
 	return fmt.Sprintln(
 		fmt.Sprint(coloredString("usage", 32), ":"),
 		"./testaustime-cli [flags]",
@@ -85,7 +65,7 @@ func commandUsage(command string) string {
 
 func header(command string) string {
 	return fmt.Sprint(
-		commandUsage(command),
+		formatUsage(command),
 		"\n",
 		flags(),
 	)

@@ -1,2 +1,2 @@
 token="YourTestaustimeAuthToken" # Required
-apiurl="https://YourTestaustimeInstance.fi"
+apiurl="https://YourTestaustimeInstance.fi" # Not required

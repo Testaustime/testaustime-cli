@@ -75,8 +75,10 @@ func calculateCodingStatistics(rawdata apiresponse) (codestats Statistics) {
 		switch {
 		case elapsedHours <= 24:
 			codestats.Today += float32(heartbeat.Duration) / 60.0
+			fallthrough
 		case elapsedHours <= 24*7:
 			codestats.LastWeek += float32(heartbeat.Duration) / 60.0
+			fallthrough
 		case elapsedHours <= 24*30:
 			codestats.LastMonth += float32(heartbeat.Duration) / 60.0
 		}

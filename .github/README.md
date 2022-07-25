@@ -13,6 +13,10 @@ Command line utility for [Testaustime](https://testaustime.fi).
 git clone https://github.com/romeq/testaustime-cli
 cd testaustime-cli
 
+# install config
+mkdir -p ~/.config/testaustime-cli
+cp config.toml.example ~/.config/testaustime-cli/config.toml
+
 # install dependencies and compile binary
 go get -u
 go build main.go

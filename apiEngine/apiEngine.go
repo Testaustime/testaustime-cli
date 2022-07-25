@@ -34,7 +34,6 @@ func (ct *DateFormat) MarshalJSON() ([]byte, error) {
 	return []byte(fmt.Sprintf("\"%s\"", ct.Time.Format(ctLayout))), nil
 }
 
-
 type Api struct {
 	token string
 	url   string
