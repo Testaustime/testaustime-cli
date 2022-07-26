@@ -3,11 +3,11 @@ package datahelper
 import (
 	"fmt"
 
-	"github.com/romeq/testaustime-cli/apiEngine"
+	"github.com/romeq/testaustime-cli/apiengine"
 	"github.com/romeq/testaustime-cli/logger"
 )
 
-func showList(list apiEngine.TopStatsList) {
+func showList(list apiengine.TopStatsList) {
 	for i, item := range list {
 		if i >= 5 {
 			break

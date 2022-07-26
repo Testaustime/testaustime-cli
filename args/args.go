@@ -10,6 +10,7 @@ var colors = true
 type Args struct {
 	Command             string
 	SubCommand          string
+	OtherCommands       []string
 	DisableColors       bool
 	AlternateConfigFile string
 }
@@ -24,6 +25,7 @@ func Parse() (args Args) {
 	colors = !args.DisableColors
 	args.Command = flag.Arg(0)
 	args.SubCommand = flag.Arg(1)
+	args.OtherCommands = flag.Args()
 
 	return args
 }

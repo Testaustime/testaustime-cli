@@ -29,5 +29,12 @@ func ColoredPrint(color int, a ...any) {
 		fmt.Printf("\033[0m")
 		return
 	}
-	fmt.Println(a...)
+	fmt.Print(a...)
+}
+
+func NthElement(list []string, n int) string {
+	if len(list) > n {
+		return list[n]
+	}
+	return ""
 }

@@ -1,24 +1,26 @@
 package args
 
-import "fmt"
+import (
+	"fmt"
 
-type SubCommand struct {
-	Name string
-	Info string
-}
-type Command struct {
-	Name        string
-	Info        string
-	SubCommands []SubCommand
-}
+	"github.com/romeq/testaustime-cli/utils"
+)
 
 func CommandUsage(command Command) {
 	fmt.Print(
-		formatUsage(command.Name),
+		formatUsage(command.Name, ""),
 		"\n",
 		flags(),
 		"\n",
 		formatSubCommands(&command.SubCommands),
+	)
+}
+
+func UserUsage() {
+	fmt.Print(
+		formatUsage(UserCommand.Name, "<user>"),
+		"\n",
+		flags(),
 	)
 }
 
@@ -40,32 +42,31 @@ func formatCommands(c *[]Command) (result string) {
 	return result + "\n"
 }
 
-func formatSubCommands(c *[]SubCommand) (result string) {
+func formatSubCommands(c *map[string]SubCommand) (result string) {
 	if len(*c) == 0 {
 		return result
 	}
 
 	result += fmt.Sprintf("%s:\n", coloredString("subcommands", 33))
-	for _, i := range *c {
-		r := i.Name
+	for r, i := range *c {
 		result += fmt.Sprintf("  %s: %s\n", coloredString(r, 37), i.Info)
 	}
 
 	return result + "\n"
 }
 
-func formatUsage(command string) string {
+func formatUsage(command, subcommand string) string {
 	return fmt.Sprintln(
 		fmt.Sprint(coloredString("usage", 32), ":"),
 		"./testaustime-cli [flags]",
 		command,
-		"[subcommand]",
+		utils.StringOr(subcommand, "[subcommand]"),
 	)
 }
 
 func header(command string) string {
 	return fmt.Sprint(
-		formatUsage(command),
+		formatUsage(command, ""),
 		"\n",
 		flags(),
 	)

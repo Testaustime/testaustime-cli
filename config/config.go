@@ -1,12 +1,10 @@
 package config
 
 import (
-	"errors"
 	"os"
 	"path"
 
 	"github.com/BurntSushi/toml"
-	"github.com/romeq/testaustime-cli/logger"
 	"github.com/romeq/testaustime-cli/utils"
 )
 
@@ -40,17 +38,10 @@ func (c *Config) UpdateField(field *string, newValue string) {
 func GetConfiguration(alternateConfigFile string) (config Config) {
 	configFile := utils.StringOr(alternateConfigFile, resolveConfigPath())
 
-	m, err := toml.DecodeFile(configFile, &config)
+	_, err := toml.DecodeFile(configFile, &config)
 	utils.Check(err)
-	checkConfiguration(&m)
 
 	return New(configFile, config.Token, config.ApiUrl)
-}
-
-func checkConfiguration(m *toml.MetaData) {
-	if !m.IsDefined("token") {
-		logger.Error(errors.New("Authentication token was not found in the configuration file."))
-	}
 }
 
 func resolveConfigPath() string {

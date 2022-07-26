@@ -1,8 +1,8 @@
 package datahelper
 
-import "github.com/romeq/testaustime-cli/apiEngine"
+import "github.com/romeq/testaustime-cli/apiengine"
 
-func ShowFriends(friends []apiEngine.FriendsCodingTime) {
+func ShowFriends(friends []apiengine.FriendsCodingTime) {
 	for _, friend := range friends {
 		color := 37
 		if friend.Username == "@me" {

@@ -1,4 +1,4 @@
-package apiEngine
+package apiengine
 
 import (
 	"encoding/json"

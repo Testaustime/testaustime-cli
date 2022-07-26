@@ -1,4 +1,4 @@
-package apiEngine
+package apiengine
 
 import (
 	"encoding/json"
@@ -7,6 +7,7 @@ import (
 	"github.com/romeq/testaustime-cli/utils"
 )
 
+//
 type FriendActivity struct {
 	AllTime   float32 `json:"all_time"`
 	LastMonth float32 `json:"past_month"`
@@ -25,6 +26,7 @@ type FriendsCodingTime struct {
 
 type Friends []Friend
 
+// Get list of friends
 func (a *Api) GetFriends() (friends Friends) {
 	res := a.getRequest("friends/list")
 	verifyRequest(res.StatusCode, 200)
@@ -34,6 +36,27 @@ func (a *Api) GetFriends() (friends Friends) {
 	return friends
 }
 
+// AddFriend adds a new friend
+func (a *Api) AddFriend(friendCode string) (errResponse ErrorResponse) {
+	res := a.postRequest("friends/add", []byte(friendCode))
+	verifyRequest(res.StatusCode, 200)
+	defer res.Body.Close()
+
+	utils.Check(json.NewDecoder(res.Body).Decode(&errResponse))
+	return errResponse
+}
+
+// RemoveFriend removes a friend
+func (a *Api) RemoveFriend(friendName string) (errResponse ErrorResponse) {
+	res := a.deleteRequest("friends/remove", []byte(friendName))
+	verifyRequest(res.StatusCode, 200)
+	defer res.Body.Close()
+
+	utils.Check(json.NewDecoder(res.Body).Decode(&errResponse))
+	return errResponse
+}
+
+// AddSelf returns list of friends user's account has been appended
 func (f Friends) AddSelf(statistics Statistics) *Friends {
 	f = append(f, Friend{
 		"@me",
@@ -62,8 +85,8 @@ func (f *Friends) AllTime() (result []FriendsCodingTime) {
 	return result
 }
 
-// LastMonth sorts friends' data with their past month's coding statistics
-func (f *Friends) LastMonth() (result []FriendsCodingTime) {
+// PastMonth sorts friends' data with their past month's coding statistics
+func (f *Friends) PastMonth() (result []FriendsCodingTime) {
 	friends := *f
 	sort.Slice(friends, func(i, j int) bool {
 		return friends[i].CodingTime.LastMonth > friends[j].CodingTime.LastMonth
@@ -78,7 +101,8 @@ func (f *Friends) LastMonth() (result []FriendsCodingTime) {
 	return result
 }
 
-func (f *Friends) LastWeek() (result []FriendsCodingTime) {
+// PastMonth sorts friends' data with their past week's coding statistics
+func (f *Friends) PastWeek() (result []FriendsCodingTime) {
 	friends := *f
 	sort.Slice(friends, func(i, j int) bool {
 		return friends[i].CodingTime.LastWeek > friends[j].CodingTime.LastWeek

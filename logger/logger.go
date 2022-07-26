@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"strings"
 )
 
 var errLogger *log.Logger = log.New(os.Stderr, "", log.LUTC)
@@ -12,13 +11,13 @@ var ColorsEnabled bool = true
 
 func Error(err error) {
 	logMessage(errLogger, fmt.Sprint(
-		coloredType("AARGH, Error!", 31),
-		strings.ToLower(err.Error()),
+		coloredType("Aw, error!", 31),
+		err.Error(),
 	))
 	os.Exit(1)
 }
 
-func logMessage[T any](logger *log.Logger, message T) {
+func logMessage(logger *log.Logger, message any) {
 	logger.Println(message)
 }
 
