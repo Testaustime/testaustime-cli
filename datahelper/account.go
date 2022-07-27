@@ -13,6 +13,8 @@ import (
 	"golang.org/x/term"
 )
 
+// AskInput prompts user for input in stdin.
+// result is trimmed.
 func AskInput(prompt string) string {
 	utils.ColoredPrint(35, prompt)
 	fmt.Print(": ")
@@ -22,7 +24,9 @@ func AskInput(prompt string) string {
 	return strings.TrimSpace(string(result))
 }
 
-func AskPassword(prompt string) string {
+// AskPassword prompts user for hidden input in stdin.
+// result is trimmed.
+func AskPassword(prompt string) *string {
 	utils.ColoredPrint(35, utils.StringOr(prompt, "Password"))
 	fmt.Print(": ")
 
@@ -39,5 +43,5 @@ func AskPassword(prompt string) string {
 		))
 	}
 
-	return password
+	return &password
 }

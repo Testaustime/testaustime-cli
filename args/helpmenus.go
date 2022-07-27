@@ -6,64 +6,98 @@ import (
 	"github.com/romeq/testaustime-cli/utils"
 )
 
+// secondaryColor declares what color should be used when highlighting
+// specific things in help menu.
+var secondaryColor int = 35
+
+// lightColor declares what color should be used when something wants
+// to be given less attention. By default it's white.
+var lightColor = 37
+
+// CommandUsage prints command usage for a specific command
 func CommandUsage(command Command) {
 	fmt.Print(
 		formatUsage(command.Name, ""),
-		"\n",
-		flags(),
-		"\n",
+		"\n", flags(), "\n",
 		formatSubCommands(&command.SubCommands),
 	)
 }
 
-func UserUsage() {
+// SubCommandUsage prints command usage for a specific command
+func SubCommandUsage(command Command, subcommand SubCommand) {
 	fmt.Print(
-		formatUsage(UserCommand.Name, "<user>"),
-		"\n",
-		flags(),
+		formatUsage(fmt.Sprintf("%s %s", command.Name, subcommand.Name), "[options]"),
+		"\n", flags(), "\n",
+		formatPossibleValues(&subcommand.PossibleValues),
 	)
 }
 
+// UserUsage prints usage for user command.
+func UserUsage() {
+	fmt.Print(formatUsage(UserCommand.Name, "<user>"), "\n", flags())
+}
+
+// Usage prints program's general usage.
 func Usage() {
 	fmt.Print(
-		header("<command>"),
-		"\n",
-		fmt.Sprintf("%s:\n", coloredString("commands", 33)),
+		header("<command>"), "\n",
+		fmt.Sprintf("%s \t \n", coloredString("commands", secondaryColor)),
 		formatCommands(&Commands),
 	)
 }
 
-func formatCommands(c *[]Command) (result string) {
-	for _, i := range *c {
+// formatCommands returns every command specified in commands list
+func formatCommands(commands *[]Command) (result string) {
+	for _, i := range *commands {
 		r := i.Name
-		result += fmt.Sprintf("  %s: %s\n", coloredString(r, 37), i.Info)
+		result += fmt.Sprintf("  %s \t %s\n", r, coloredString(i.Info, lightColor))
 	}
-
 	return result + "\n"
 }
 
+// formatSubCommands prints subcommands header and usage of command's every subcommand.
+// If no subcommands are given, it will result in an empty string.
 func formatSubCommands(c *map[string]SubCommand) (result string) {
 	if len(*c) == 0 {
 		return result
 	}
 
-	result += fmt.Sprintf("%s:\n", coloredString("subcommands", 33))
-	for r, i := range *c {
-		result += fmt.Sprintf("  %s: %s\n", coloredString(r, 37), i.Info)
+	result += fmt.Sprintf("%s\n", coloredString("subcommands", secondaryColor))
+	for _, i := range *c {
+		r := i.Name
+		result += fmt.Sprintf("  %s \t %s\n", r, coloredString(i.Info, lightColor))
 	}
-
 	return result + "\n"
 }
 
+// formatSubCommands prints subcommands header and usage of command's every subcommand.
+// If no subcommands are given, it will result in an empty string.
+func formatPossibleValues(c *[]PossibleValue) (result string) {
+	if len(*c) == 0 {
+		return result
+	}
+
+	result += fmt.Sprintf("%s\n", coloredString("possible options", secondaryColor))
+	for _, i := range *c {
+		r := i.Name
+		result += fmt.Sprintf("  %s \t %s\n", r, coloredString(i.Info, lightColor))
+	}
+	return result + "\n"
+}
+
+// formatUsage returns colored usage of program.
+// if subcommand is an empty string, it will be replaced with "[subcommand]"
 func formatUsage(command, subcommand string) string {
 	return fmt.Sprintln(
-		fmt.Sprint(coloredString("usage", 32), ":"),
-		"./testaustime-cli [flags]",
-		command,
-		utils.StringOr(subcommand, "[subcommand]"),
+		fmt.Sprint(coloredString("usage", secondaryColor)),
+		"./testaustime",
+		coloredString("[flags]", lightColor),
+		coloredString(command, lightColor),
+		coloredString(utils.StringOr(subcommand, "[subcommand]"), lightColor),
 	)
 }
 
+// header returns a string including a colored header
 func header(command string) string {
 	return fmt.Sprint(
 		formatUsage(command, ""),
@@ -72,11 +106,12 @@ func header(command string) string {
 	)
 }
 
+// flags returns all program flags and their usage.
 func flags() string {
 	return fmt.Sprint(
-		fmt.Sprintf("%s:\n", coloredString("flags", 33)),
-		coloredString("  -c file", 37), ": read configuration from file \n",
-		coloredString("  -no-colors", 37), ": don't include colors in output \n",
-		coloredString("  -h, -help", 37), ": show help menu\n",
+		fmt.Sprintf("%s\n", coloredString("flags", secondaryColor)),
+		"  -c file \t ", coloredString("read configuration from file \n", lightColor),
+		"  -no-colors \t ", coloredString("don't include colors in output \n", lightColor),
+		"  -h, -help \t ", coloredString("show help menu\n", lightColor),
 	)
 }

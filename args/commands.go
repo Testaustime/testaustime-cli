@@ -1,9 +1,17 @@
 package args
 
-type SubCommand struct {
+type PossibleValue struct {
 	Name string
 	Info string
 }
+
+// SubCommand is a structure used for subcommands.
+type SubCommand struct {
+	Name           string
+	Info           string
+	PossibleValues []PossibleValue
+}
+
 type Command struct {
 	Name        string
 	Info        string
@@ -28,14 +36,14 @@ var AccountCommand = Command{
 		},
 		"newToken": {
 			Name: "newToken",
-			Info: "regenerates your authorization token",
+			Info: "regenerates your authentication token",
 		},
 		"newFriendcode": {
-			Name: "newFriendcode",
+			Name: "newCode",
 			Info: "regenerates your friend code",
 		},
 		"changePassword": {
-			Name: "changePassword",
+			Name: "newPassword",
 			Info: "change your password",
 		},
 	},
@@ -45,9 +53,13 @@ var StatisticsCommand = Command{
 	Name: "statistics",
 	Info: "show coding statistics",
 	SubCommands: map[string]SubCommand{
-		"latest": {
-			Name: "latest",
-			Info: "show latest languages and projects",
+		"top": {
+			Name: "top",
+			Info: "show top languages and projects",
+			PossibleValues: []PossibleValue{
+				PossibleValue{"pastWeek", "show past week's top statistics"},
+				PossibleValue{"pastMonth", "show past month's top statistics"},
+			},
 		},
 	},
 }
@@ -65,18 +77,18 @@ var FriendsCommand = Command{
 			Info: "show friends' coding time during past week",
 		},
 		"add": {
-			Name: "add",
+			Name: "addFriend",
 			Info: "Add a new friend",
 		},
 		"remove": {
-			Name: "remove",
+			Name: "removeFriend",
 			Info: "Remove a friend",
 		},
 	},
 }
 
 var UserCommand = Command{
-	Name:        "user",
+	Name:        "getuser",
 	Info:        "show specific friend's statistics",
 	SubCommands: map[string]SubCommand{},
 }

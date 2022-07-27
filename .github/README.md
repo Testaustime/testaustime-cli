@@ -25,3 +25,4 @@ go build main.go
 ln -s $PWD/main ~/.local/bin/testaustime-cli
 ```
 
+

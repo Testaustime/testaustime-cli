@@ -3,6 +3,7 @@ package main
 import (
 	"errors"
 	"fmt"
+	"time"
 
 	"github.com/romeq/testaustime-cli/apiengine"
 	"github.com/romeq/testaustime-cli/args"
@@ -48,10 +49,9 @@ func main() {
 				return
 			}
 
-			result, status := api.Login(username, datahelper.AskPassword(""))
+			result, status := api.Login(username, *datahelper.AskPassword(""))
 			if status.Err != "" {
-				utils.ColoredPrint(31, "Login failed")
-				fmt.Println(":", status.Err)
+				printErr(31, "Login failed", status.Err)
 				break
 			}
 
@@ -67,10 +67,11 @@ func main() {
 				username = arguments.OtherCommands[2]
 			}
 
-			result, status := api.Register(username, datahelper.AskPassword(""))
+			password := datahelper.AskPassword("")
+			result, status := api.Register(username, *password)
+			zeroizePassowrds(password)
 			if status.Err != "" {
-				utils.ColoredPrint(31, "Registration failed")
-				fmt.Println(":", status.Err)
+				printErr(31, "Registration failed", status.Err)
 				break
 			}
 
@@ -96,15 +97,17 @@ func main() {
 		case args.AccountCommand.SubCommands["changePassword"].Name:
 			oldPassword := datahelper.AskPassword("Old password")
 			newPassword := datahelper.AskPassword("New password")
-			err := api.ChangePassword(oldPassword, newPassword)
+
+			err := api.ChangePassword(*oldPassword, *newPassword)
+			zeroizePassowrds(oldPassword, newPassword)
+
 			if err.Err != "" {
-				utils.ColoredPrint(31, "Password was not changed")
-				fmt.Println(":", err.Err)
+				printErr(31, "Password was not changed", err.Err)
 				return
 			}
 			utils.ColoredPrint(32, "Password was changed!\n")
 
-			// User has massive a skill issue
+		// User has massive a skill issue
 		default:
 			args.CommandUsage(args.AccountCommand)
 		}
@@ -114,11 +117,26 @@ func main() {
 
 		// User wants to see their current statistics
 		case "":
-			datahelper.ShowStatistics(api.GetStatistics(""), false)
+			datahelper.ShowStatistics(api.GetStatistics("", false, time.Time{}), false)
 
-			// User wants to also see their latest projects and languages
-		case args.StatisticsCommand.SubCommands["latest"].Name:
-			datahelper.ShowStatistics(api.GetStatistics(""), true)
+			// User wants to also see their top projects and languages
+		case args.StatisticsCommand.SubCommands["top"].Name:
+			filterTime := time.Time{}
+			switch utils.NthElement(arguments.OtherCommands, 2) {
+			case "":
+				break
+
+			case "pastWeek":
+				filterTime = time.Now().AddDate(0, 0, -7)
+
+			case "pastMonth":
+				filterTime = time.Now().AddDate(0, -1, 0)
+
+			default:
+				args.SubCommandUsage(args.StatisticsCommand, args.StatisticsCommand.SubCommands["top"])
+				return
+			}
+			datahelper.ShowStatistics(api.GetStatistics("", true, filterTime), true)
 
 		default:
 			args.CommandUsage(args.StatisticsCommand)
@@ -127,17 +145,17 @@ func main() {
 	case args.FriendsCommand.Name:
 		switch arguments.SubCommand {
 		case "":
-			myaccount := api.GetStatistics("")
+			myaccount := api.GetStatistics("", false, time.Time{})
 			friends := api.GetFriends()
 			datahelper.ShowFriends(friends.AddSelf(myaccount).AllTime())
 
 		case args.FriendsCommand.SubCommands["pastWeek"].Name:
-			myaccount := api.GetStatistics("")
+			myaccount := api.GetStatistics("", false, time.Now().AddDate(0, 0, -7))
 			friends := api.GetFriends()
 			datahelper.ShowFriends(friends.AddSelf(myaccount).PastWeek())
 
 		case args.FriendsCommand.SubCommands["pastMonth"].Name:
-			myaccount := api.GetStatistics("")
+			myaccount := api.GetStatistics("", false, time.Now().AddDate(0, -1, 0))
 			friends := api.GetFriends()
 			datahelper.ShowFriends(friends.AddSelf(myaccount).PastMonth())
 
@@ -151,8 +169,7 @@ func main() {
 
 			err := api.AddFriend(friendcode)
 			if err.Err != "" {
-				utils.ColoredPrint(31, "Friend left unadded")
-				fmt.Println(":", err.Err)
+				printErr(31, "Friend left unadded", err.Err)
 				return
 			}
 			utils.ColoredPrint(32, "Friend added!\n")
@@ -167,8 +184,7 @@ func main() {
 
 			err := api.RemoveFriend(friendcode)
 			if err.Err != "" {
-				utils.ColoredPrint(31, "Friend could not be removed")
-				fmt.Println(":", err.Err)
+				printErr(31, "Friend could not be removed", err.Err)
 				return
 			}
 			utils.ColoredPrint(32, "Friend removed!\n")
@@ -183,10 +199,25 @@ func main() {
 			return
 		}
 
-		datahelper.ShowStatistics(api.GetStatistics(arguments.SubCommand), false)
+		datahelper.ShowStatistics(
+			api.GetStatistics(arguments.SubCommand, false, time.Time{}), false)
 
 	default:
 		args.Usage()
 		return
+	}
+}
+
+func printErr(color int, errtype, errmsg string) {
+	utils.ColoredPrint(color, errtype)
+	fmt.Println(":", errmsg)
+
+}
+
+func zeroizePassowrds[T *string](x ...T) {
+	for _, p := range x {
+		for i := 0; i < 128; i++ {
+			*p += "\x00"
+		}
 	}
 }

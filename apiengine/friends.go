@@ -7,11 +7,10 @@ import (
 	"github.com/romeq/testaustime-cli/utils"
 )
 
-//
 type FriendActivity struct {
 	AllTime   float32 `json:"all_time"`
-	LastMonth float32 `json:"past_month"`
-	LastWeek  float32 `json:"past_week"`
+	PastMonth float32 `json:"past_month"`
+	PastWeek  float32 `json:"past_week"`
 }
 
 type Friend struct {
@@ -62,14 +61,14 @@ func (f Friends) AddSelf(statistics Statistics) *Friends {
 		"@me",
 		FriendActivity{
 			statistics.AllTime * 60,
-			statistics.LastMonth * 60,
-			statistics.LastWeek * 60,
+			statistics.PastMonth * 60,
+			statistics.PastWeek * 60,
 		},
 	})
 	return &f
 }
 
-// LastMonth sorts friends' data with their past month's coding statistics
+// AllTime sorts friends' data with their past month's coding statistics
 func (f *Friends) AllTime() (result []FriendsCodingTime) {
 	friends := *f
 	sort.Slice(friends, func(i, j int) bool {
@@ -89,28 +88,28 @@ func (f *Friends) AllTime() (result []FriendsCodingTime) {
 func (f *Friends) PastMonth() (result []FriendsCodingTime) {
 	friends := *f
 	sort.Slice(friends, func(i, j int) bool {
-		return friends[i].CodingTime.LastMonth > friends[j].CodingTime.LastMonth
+		return friends[i].CodingTime.PastMonth > friends[j].CodingTime.PastMonth
 	})
 	for _, x := range *f {
 		result = append(result, FriendsCodingTime{
 			x.Username,
-			x.CodingTime.LastMonth,
+			x.CodingTime.PastMonth,
 		})
 	}
 
 	return result
 }
 
-// PastMonth sorts friends' data with their past week's coding statistics
+// PastWeek sorts friends' data with their past week's coding statistics
 func (f *Friends) PastWeek() (result []FriendsCodingTime) {
 	friends := *f
 	sort.Slice(friends, func(i, j int) bool {
-		return friends[i].CodingTime.LastWeek > friends[j].CodingTime.LastWeek
+		return friends[i].CodingTime.PastWeek > friends[j].CodingTime.PastWeek
 	})
 	for _, x := range *f {
 		result = append(result, FriendsCodingTime{
 			x.Username,
-			x.CodingTime.LastWeek,
+			x.CodingTime.PastWeek,
 		})
 	}
 

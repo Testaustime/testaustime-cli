@@ -14,6 +14,9 @@ type Config struct {
 	ApiUrl string
 }
 
+// New returns a new Config struct with given parameters.
+// if apiUrl is empty string, it will be later replaced with current
+// production server.
 func New(file, token, apiUrl string) Config {
 	return Config{
 		file,
@@ -22,6 +25,8 @@ func New(file, token, apiUrl string) Config {
 	}
 }
 
+// UpdateField will update field in current Config struct and
+// in configuration file which was used to launch testaustime-cli
 func (c *Config) UpdateField(field *string, newValue string) {
 	*field = newValue
 
@@ -35,8 +40,11 @@ func (c *Config) UpdateField(field *string, newValue string) {
 	}))
 }
 
-func GetConfiguration(alternateConfigFile string) (config Config) {
-	configFile := utils.StringOr(alternateConfigFile, resolveConfigPath())
+// GetConfiguration will read configuration from configFileOverride.
+// if configFileOverride is empty string, GetConfiguration will resolve
+// configuration path using standard enviroment variables.
+func GetConfiguration(configFileOverride string) (config Config) {
+	configFile := utils.StringOr(configFileOverride, resolveConfigPath())
 
 	_, err := toml.DecodeFile(configFile, &config)
 	utils.Check(err)
@@ -44,6 +52,7 @@ func GetConfiguration(alternateConfigFile string) (config Config) {
 	return New(configFile, config.Token, config.ApiUrl)
 }
 
+// resolveConfigPath will resolve configuration path using standards
 func resolveConfigPath() string {
 	globalConfigDir := os.ExpandEnv("$HOME/.config")
 	xdg_cfg_home := os.Getenv("XDG_CONFIG_HOME")

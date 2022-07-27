@@ -1,0 +1,21 @@
+#compdef testaustime
+
+_testaustime() {
+    local state
+
+    echo "$state"
+    _arguments \
+        ": :->account" \
+        ": :->statistics"
+
+
+    case $state in
+        account)
+            _arguments '1:profiles:(account)' 
+            compadd token newToken newFriendcode ;;
+        statistics)
+            _arguments '1:profiles:(statistics)' ;;
+    esac
+}
+
+_testaustime "$@"

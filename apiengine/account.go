@@ -72,6 +72,8 @@ func (a *Api) Register(
 	return response, errResponse
 }
 
+// ChangePassword changes account's password using the old password and a new password.
+// Requests are made using authentication token.
 func (a *Api) ChangePassword(
 	oldPassword,
 	newPassword string,
@@ -98,7 +100,7 @@ func (a *Api) GetAuthtoken() string {
 }
 
 // NewAuthtoken generates a new authentication token and
-// returns it.
+// returns it. Request is made using old authentication token.
 func (a *Api) NewAuthtoken() string {
 	res := a.postRequest("auth/regenerate", nil)
 	verifyRequest(res.StatusCode, 200)
@@ -112,7 +114,9 @@ func (a *Api) NewAuthtoken() string {
 	return response.Token
 }
 
-// NewFriendcode generates a new friend code and returns it.
+// NewFriendcode makes a request to testaustime API generating
+// a new friend code and returns it. Request is made using authentication
+// token.
 func (a *Api) NewFriendcode() string {
 	res := a.postRequest("friends/regenerate", nil)
 	verifyRequest(res.StatusCode, 200)
