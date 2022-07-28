@@ -1,15 +1,9 @@
 package args
 
-
-type PossibleValue struct {
-	Name string
-	Info string
-}
-
 type SubCommand struct {
-	Name           string
-	Info           string
-	PossibleValues []PossibleValue
+	Name        string
+	Info        string
+	SubCommands map[string]SubCommand
 }
 
 type Command struct {
@@ -54,12 +48,9 @@ var StatisticsCommand = Command{
 	Info: "show coding statistics",
 	SubCommands: map[string]SubCommand{
 		"top": {
-			Name: "top",
-			Info: "show top languages and projects",
-			PossibleValues: []PossibleValue{
-				{"pastWeek", "show past week's top statistics"},
-				{"pastMonth", "show past month's top statistics"},
-			},
+			Name:        "top",
+			Info:        "show top languages and projects",
+			SubCommands: blaa,
 		},
 	},
 }
@@ -88,14 +79,21 @@ var FriendsCommand = Command{
 }
 
 var UserCommand = Command{
-	Name:        "getuser",
-	Info:        "show specific friend's statistics",
+	Name: "getuser",
+	Info: "show specific friend's statistics",
 	SubCommands: map[string]SubCommand{
-        "<user>": {
-            Name: "<user>",
-            Info: "show data for specific user",
-        },
-    },
+		"<user>": {
+			Name: "<user>",
+			Info: "show data for specific user",
+			SubCommands: map[string]SubCommand{
+				"top": {
+					Name:        "top",
+					Info:        "show top statistics",
+					SubCommands: blaa,
+				},
+			},
+		},
+	},
 }
 
 var Commands = []Command{
@@ -103,4 +101,17 @@ var Commands = []Command{
 	StatisticsCommand,
 	FriendsCommand,
 	UserCommand,
+}
+
+var blaa = map[string]SubCommand{
+	"pastWeek": {
+		Name:        "pastWeek",
+		Info:        "show past week's top statistics",
+		SubCommands: nil,
+	},
+	"pastMonth": {
+		Name:        "pastMonth",
+		Info:        "show past month's top statistics",
+		SubCommands: nil,
+	},
 }

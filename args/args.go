@@ -13,7 +13,7 @@ type Args struct {
 	OtherCommands       []string
 	DisableColors       bool
 	AlternateConfigFile string
-    MeasureRequests bool
+	MeasureRequests     bool
 }
 
 func Parse() (args Args) {
@@ -21,7 +21,7 @@ func Parse() (args Args) {
 
 	flag.StringVar(&args.AlternateConfigFile, "c", "", "Set alternate config location")
 	flag.BoolVar(&args.DisableColors, "no-colors", false, "Disable colors in output")
-	flag.BoolVar(&args.MeasureRequests, "measure", false, "Measure time taken in request")
+	flag.BoolVar(&args.MeasureRequests, "time", false, "Measure time taken in request")
 	flag.Parse()
 
 	colors = !args.DisableColors

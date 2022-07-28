@@ -5,27 +5,33 @@ import (
 
 	"github.com/romeq/testaustime-cli/apiengine"
 	"github.com/romeq/testaustime-cli/logger"
+	"github.com/romeq/testaustime-cli/utils"
 )
-
 
 // TopMaximum
 var TopMaximum = 5
 
 func showList(list apiengine.TopStatsList) {
+	if len(list) == 0 {
+		printField("Empty!", "This list is currently empty.", 37)
+
+		return
+	}
 	for i, item := range list {
 		if i >= TopMaximum {
 			break
 		}
 
-		if item.Name == "" {
-			item.Name = "<none>"
-		}
 		color := 37
 		if i == 0 {
 			color = 32
 		}
 
-		printField(item.Name, rawTimeToHumanReadable(item.Time), color)
+		printField(
+			utils.StringOr(item.Name, "<none>"),
+			rawTimeToHumanReadable(item.Time),
+			color,
+		)
 	}
 }
 

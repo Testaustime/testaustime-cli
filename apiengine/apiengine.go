@@ -58,16 +58,22 @@ func verifyResponse(res *http.Response, wantedStatusCode int) {
 
 //
 func sendRequest(client *http.Client, req *http.Request) (*http.Response, error) {
-    if MeasureTime {
-        timeBefore := time.Now()
-        res, err := client.Do(req)
-        logger.Info(fmt.Sprintf("Time taken in request: %.5fs", 
-            time.Since(timeBefore).Seconds()))
-        logger.Info(fmt.Sprintf("Response size: %d Kb", res.ContentLength*8/1024))
-        logger.Info("")
-        return res, err
-    }
-    return client.Do(req)
+	if !MeasureTime {
+		return client.Do(req)
+	}
+
+	timeBefore := time.Now()
+	res, err := client.Do(req)
+	if err != nil {
+		return nil, err
+	}
+
+	logger.Info(fmt.Sprintf(
+		"Time taken in request: %.5fs", time.Since(timeBefore).Seconds()))
+	logger.Info(fmt.Sprintf(
+		"Response size: %s", responseSize(float32(res.ContentLength))))
+	logger.Info("")
+	return res, err
 }
 
 // getRequest sends a GET request to path with authentication
@@ -137,4 +143,20 @@ func (ct *DateFormat) UnmarshalJSON(b []byte) (err error) {
 	}
 	ct.Time, err = time.Parse(ctLayout, s)
 	return
+}
+
+// responseSize returns string formatted with response size in
+// either kilobytes or megabytes, depending on it's size
+func responseSize(responseLength float32) string {
+	responseSizeInKBs := responseLength / 1024
+	responseSizeInMBs := responseSizeInKBs / 1024
+
+	switch {
+	case responseSizeInKBs > 0:
+		return fmt.Sprintf("%.0f K", responseSizeInKBs)
+	case responseSizeInMBs > 0:
+		return fmt.Sprintf("%.3f M", responseSizeInMBs)
+	default:
+		return fmt.Sprint(responseLength)
+	}
 }

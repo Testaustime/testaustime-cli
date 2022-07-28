@@ -16,8 +16,8 @@ import (
 func main() {
 	// parse arguments
 	arguments := args.Parse()
-    logger.ColorsEnabled = !arguments.DisableColors
-    apiengine.MeasureTime = arguments.MeasureRequests 
+	logger.ColorsEnabled = !arguments.DisableColors
+	apiengine.MeasureTime = arguments.MeasureRequests
 
 	// parse configuration file
 	cfg := config.GetConfiguration(arguments.AlternateConfigFile)
@@ -114,8 +114,8 @@ func main() {
 		case "":
 			datahelper.ShowStatistics(api.GetStatistics("", false, time.Time{}), false)
 
-        // User wants to also see their top projects and languages
-        case args.StatisticsCommand.SubCommands["top"].Name:
+		// User wants to also see their top projects and languages
+		case args.StatisticsCommand.SubCommands["top"].Name:
 			filterTime := time.Time{}
 			switch utils.NthElement(arguments.OtherCommands, 2) {
 			case "":
@@ -129,16 +129,16 @@ func main() {
 
 			default:
 				args.SubCommandUsage(
-                    args.StatisticsCommand, 
-                    args.StatisticsCommand.SubCommands["top"],
-                )
+					args.StatisticsCommand,
+					args.StatisticsCommand.SubCommands["top"].SubCommands,
+				)
 				return
 			}
 			datahelper.ShowStatistics(api.GetStatistics("", true, filterTime), true)
 
 		default:
 			args.CommandUsage(args.StatisticsCommand)
-            return
+			return
 		}
 
 	case args.FriendsCommand.Name:
@@ -194,36 +194,38 @@ func main() {
 			args.CommandUsage(args.UserCommand)
 			return
 		}
+		topCommand := args.UserCommand.SubCommands["<user>"].SubCommands["top"]
 
-        switch utils.NthElement(arguments.OtherCommands, 2) {
-        case "":
-            datahelper.ShowStatistics(api.GetStatistics(arguments.SubCommand, false, time.Time{}), false)
-        case "top":
-            filterTime := time.Time{}
-            switch utils.NthElement(arguments.OtherCommands, 3) {
-            case "":
+		switch utils.NthElement(arguments.OtherCommands, 2) {
+		case "":
+			datahelper.ShowStatistics(api.GetStatistics(arguments.SubCommand, false, time.Time{}), false)
 
-            case "pastWeek":
-                filterTime = time.Now().AddDate(0, 0, -7)
+		case topCommand.Name:
+			filterTime := time.Time{}
+			switch utils.NthElement(arguments.OtherCommands, 3) {
+			case "":
 
-            case "pastMonth":
-                filterTime = time.Now().AddDate(0, -1, 0)
+			case topCommand.SubCommands["pastWeek"].Name:
+				filterTime = time.Now().AddDate(0, 0, -7)
 
-            default:
-                args.SubCommandUsage(
-                    args.UserCommand, 
-                    args.UserCommand.SubCommands["<user>"],
-                )
-                return
-            }
-            datahelper.ShowStatistics(api.GetStatistics(arguments.SubCommand, true, filterTime), true)
-        default:
-            args.SubCommandUsage(
-                args.UserCommand, 
-                args.UserCommand.SubCommands["<user>"],
-            )
-            return
-        }
+			case topCommand.SubCommands["pastMonth"].Name:
+				filterTime = time.Now().AddDate(0, -1, 0)
+
+			default:
+				args.SubCommandUsage(
+					args.UserCommand,
+					topCommand.SubCommands,
+				)
+				return
+			}
+			datahelper.ShowStatistics(api.GetStatistics(arguments.SubCommand, true, filterTime), true)
+		default:
+			args.SubCommandUsage(
+				args.UserCommand,
+				args.UserCommand.SubCommands["<user>"].SubCommands,
+			)
+			return
+		}
 
 	default:
 		args.Usage()

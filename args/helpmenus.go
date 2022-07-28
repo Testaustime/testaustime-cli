@@ -24,11 +24,11 @@ func CommandUsage(command Command) {
 }
 
 // SubCommandUsage prints command usage for a specific command
-func SubCommandUsage(command Command, subcommand SubCommand) {
+func SubCommandUsage(command Command, subcommand map[string]SubCommand) {
 	fmt.Print(
-		formatUsage(fmt.Sprintf("%s %s", command.Name, subcommand.Name), "[options]"),
+		formatUsage(fmt.Sprintf("%s %s", command.Name, subcommand), "[options]"),
 		"\n", flags(), "\n",
-		formatPossibleValues(&subcommand.PossibleValues),
+		formatSubCommands(&subcommand),
 	)
 }
 
@@ -66,21 +66,7 @@ func formatSubCommands(c *map[string]SubCommand) (result string) {
 	for _, i := range *c {
 		r := i.Name
 		result += fmt.Sprintf("  %s \t %s\n", r, coloredString(i.Info, lightColor))
-	}
-	return result + "\n"
-}
-
-// formatSubCommands prints subcommands header and usage of command's every subcommand.
-// If no subcommands are given, it will result in an empty string.
-func formatPossibleValues(c *[]PossibleValue) (result string) {
-	if len(*c) == 0 {
-		return result
-	}
-
-	result += fmt.Sprintf("%s\n", coloredString("possible options", secondaryColor))
-	for _, i := range *c {
-		r := i.Name
-		result += fmt.Sprintf("  %s \t %s\n", r, coloredString(i.Info, lightColor))
+		formatSubCommands(&i.SubCommands)
 	}
 	return result + "\n"
 }
@@ -112,7 +98,7 @@ func flags() string {
 		fmt.Sprintf("%s\n", coloredString("flags", secondaryColor)),
 		"  -c file \t ", coloredString("read configuration from file \n", lightColor),
 		"  -no-colors \t ", coloredString("don't include colors in output \n", lightColor),
-		"  -measure \t ", coloredString("measure time taken in request\n", lightColor),
-		"  -h, -help \t ", coloredString("show help menu\n", lightColor),
+		"  -time  \t ", coloredString("measure time taken in request\n", lightColor),
+		"  -h, -help  \t ", coloredString("show help menu\n", lightColor),
 	)
 }

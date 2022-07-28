@@ -20,7 +20,7 @@ func Error(err error) {
 func Info(message string) {
 	logMessage(errLogger, fmt.Sprint(
 		coloredType("info", 32),
-        message,
+		message,
 	))
 }
 
