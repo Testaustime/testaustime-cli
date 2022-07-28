@@ -17,9 +17,8 @@ func Check(err error) {
 func StringOr(str1, str2 string) string {
 	if str1 != "" {
 		return str1
-	} else {
-		return str2
-	}
+    } 
+    return str2
 }
 
 func ColoredPrint(color int, a ...any) {
@@ -33,7 +32,7 @@ func ColoredPrint(color int, a ...any) {
 }
 
 func NthElement(list []string, n int) string {
-	if len(list) > n {
+	if n >= 0 && len(list) > n {
 		return list[n]
 	}
 	return ""
