@@ -7,9 +7,13 @@ import (
 	"github.com/romeq/testaustime-cli/logger"
 )
 
+
+// TopMaximum
+var TopMaximum = 5
+
 func showList(list apiengine.TopStatsList) {
 	for i, item := range list {
-		if i >= 5 {
+		if i >= TopMaximum {
 			break
 		}
 

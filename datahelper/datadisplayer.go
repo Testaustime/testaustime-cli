@@ -23,6 +23,12 @@ func ShowStatistics(stats apiengine.Statistics, showTop bool) {
 
 		printBold("\nTop projects")
 		showList(stats.TopProjects)
+
+		printBold("\nTop hosts")
+		showList(stats.TopHosts)
+
+		printBold("\nTop editors")
+		showList(stats.TopEditors)
 	}
 }
 

@@ -28,7 +28,7 @@ type Friends []Friend
 // Get list of friends
 func (a *Api) GetFriends() (friends Friends) {
 	res := a.getRequest("friends/list")
-	verifyRequest(res.StatusCode, 200)
+	verifyResponse(res, 200)
 	defer res.Body.Close()
 
 	utils.Check(json.NewDecoder(res.Body).Decode(&friends))
@@ -36,22 +36,21 @@ func (a *Api) GetFriends() (friends Friends) {
 }
 
 // AddFriend adds a new friend
-func (a *Api) AddFriend(friendCode string) (errResponse ErrorResponse) {
+func (a *Api) AddFriend(friendCode string) (friend Friend, errResponse ErrorResponse) {
 	res := a.postRequest("friends/add", []byte(friendCode))
-	verifyRequest(res.StatusCode, 200)
+	verifyResponse(res, 200)
 	defer res.Body.Close()
 
-	utils.Check(json.NewDecoder(res.Body).Decode(&errResponse))
-	return errResponse
+	utils.Check(json.NewDecoder(res.Body).Decode(&friend))
+	return friend, errResponse
 }
 
 // RemoveFriend removes a friend
 func (a *Api) RemoveFriend(friendName string) (errResponse ErrorResponse) {
 	res := a.deleteRequest("friends/remove", []byte(friendName))
-	verifyRequest(res.StatusCode, 200)
+	verifyResponse(res, 200)
 	defer res.Body.Close()
 
-	utils.Check(json.NewDecoder(res.Body).Decode(&errResponse))
 	return errResponse
 }
 

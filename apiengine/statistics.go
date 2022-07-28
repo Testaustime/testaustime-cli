@@ -31,6 +31,8 @@ type Statistics struct {
 
 	TopLanguages TopStatsList
 	TopProjects  TopStatsList
+	TopHosts     TopStatsList
+	TopEditors   TopStatsList
 }
 
 type TopStatsList []topStats
@@ -38,7 +40,7 @@ type apiresponse []heartbeatStruct
 
 func (a *Api) GetStatistics(username string, latest bool, since time.Time) Statistics {
 	res := a.getRequest(fmt.Sprintf("users/%s/activity/data", utils.StringOr(username, "@me")))
-	verifyRequest(res.StatusCode, 200)
+	verifyResponse(res, 200)
 	defer res.Body.Close()
 
 	var responseJson apiresponse
@@ -49,7 +51,7 @@ func (a *Api) GetStatistics(username string, latest bool, since time.Time) Stati
 
 func calculateCodingStatistics(
 	rawdata apiresponse,
-	latest bool,
+	shouldGetTopStatistics bool,
 	since time.Time,
 ) (codestats Statistics) {
 	timenow := time.Now()
@@ -64,9 +66,11 @@ func calculateCodingStatistics(
 			continue
 		}
 
-		if latest {
+		if shouldGetTopStatistics {
 			getTopLanguages(heartbeat, &codestats, since)
 			getTopProjects(heartbeat, &codestats, since)
+			getTopHosts(heartbeat, &codestats, since)
+			getTopEditors(heartbeat, &codestats, since)
 		}
 
 		elapsed := timenow.Sub(parsedTime)
@@ -102,6 +106,14 @@ func getTopLanguages(heartbeat heartbeatStruct, codestats *Statistics, since tim
 
 func getTopProjects(heartbeat heartbeatStruct, codestats *Statistics, since time.Time) {
 	getTop(heartbeat, &heartbeat.ProjectName, codestats, &codestats.TopProjects, since)
+}
+
+func getTopHosts(heartbeat heartbeatStruct, codestats *Statistics, since time.Time) {
+	getTop(heartbeat, &heartbeat.Hostname, codestats, &codestats.TopHosts, since)
+}
+
+func getTopEditors(heartbeat heartbeatStruct, codestats *Statistics, since time.Time) {
+	getTop(heartbeat, &heartbeat.EditorName, codestats, &codestats.TopEditors, since)
 }
 
 func getTop(

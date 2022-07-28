@@ -112,6 +112,7 @@ func flags() string {
 		fmt.Sprintf("%s\n", coloredString("flags", secondaryColor)),
 		"  -c file \t ", coloredString("read configuration from file \n", lightColor),
 		"  -no-colors \t ", coloredString("don't include colors in output \n", lightColor),
+		"  -measure \t ", coloredString("measure time taken in request\n", lightColor),
 		"  -h, -help \t ", coloredString("show help menu\n", lightColor),
 	)
 }

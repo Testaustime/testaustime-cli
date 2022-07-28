@@ -2,6 +2,7 @@ package apiengine
 
 import (
 	"bytes"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"net/http"
@@ -21,6 +22,7 @@ type Api struct {
 	url   string
 }
 
+var MeasureTime bool = false
 var ctLayout string = "2006-01-02T15:04:05"
 
 // New creates a new Api struct with given parameters.
@@ -33,20 +35,39 @@ func New(token, url string) Api {
 	}
 }
 
-// verifyRequest will make sure statusCode matches wantedStatusCode.
-// If they don't match, it will result in an error which is handled by
-// logger.Error().
-func verifyRequest(statusCode, wantedStatusCode int) {
-	switch statusCode {
+// verifyResponse will make sure res.StatusCode matches wantedStatusCode.
+// If they don't match, function will result in error defined in response
+// which is then handled by logger.Error().
+func verifyResponse(res *http.Response, wantedStatusCode int) {
+	if res.StatusCode == wantedStatusCode {
+		return
+	}
+
+	var errResponse ErrorResponse
+	utils.Check(json.NewDecoder(res.Body).Decode(&errResponse))
+
+	switch res.StatusCode {
 	case http.StatusUnauthorized:
 		logger.Error(errors.New("Request failed. You are not authorized."))
 
-	case wantedStatusCode:
-		return
-
 	default:
-		logger.Error(fmt.Errorf("Request failed with status code %d.", statusCode))
+		logger.Error(fmt.Errorf("Request failed: \"%s\" (%d)", errResponse.Err,
+			res.StatusCode))
 	}
+}
+
+//
+func sendRequest(client *http.Client, req *http.Request) (*http.Response, error) {
+    if MeasureTime {
+        timeBefore := time.Now()
+        res, err := client.Do(req)
+        logger.Info(fmt.Sprintf("Time taken in request: %.5fs", 
+            time.Since(timeBefore).Seconds()))
+        logger.Info(fmt.Sprintf("Response size: %d Kb", res.ContentLength*8/1024))
+        logger.Info("")
+        return res, err
+    }
+    return client.Do(req)
 }
 
 // getRequest sends a GET request to path with authentication
@@ -58,7 +79,7 @@ func (a *Api) getRequest(path string) *http.Response {
 	utils.Check(err)
 	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", a.token))
 
-	res, err := client.Do(req)
+	res, err := sendRequest(client, req)
 	utils.Check(err)
 
 	return res
@@ -79,7 +100,7 @@ func (a *Api) postRequest(path string, requestData []byte) *http.Response {
 	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", a.token))
 	req.Header.Set("Content-type", "application/json")
 
-	res, err := client.Do(req)
+	res, err := sendRequest(client, req)
 	utils.Check(err)
 
 	return res
@@ -100,7 +121,7 @@ func (a *Api) deleteRequest(path string, requestData []byte) *http.Response {
 	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", a.token))
 	req.Header.Set("Content-type", "application/json")
 
-	res, err := client.Do(req)
+	res, err := sendRequest(client, req)
 	utils.Check(err)
 
 	return res

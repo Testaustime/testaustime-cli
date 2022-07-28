@@ -16,9 +16,8 @@ import (
 func main() {
 	// parse arguments
 	arguments := args.Parse()
-	if arguments.DisableColors {
-		logger.ColorsEnabled = false
-	}
+    logger.ColorsEnabled = !arguments.DisableColors
+    apiengine.MeasureTime = arguments.MeasureRequests 
 
 	// parse configuration file
 	cfg := config.GetConfiguration(arguments.AlternateConfigFile)
@@ -45,7 +44,7 @@ func main() {
 				username = arguments.OtherCommands[2]
 			}
 			if username == api.GetProfile().Username {
-				logger.Error(errors.New(fmt.Sprintf("You're already signed in on given account.")))
+				logger.Error(errors.New("You're already signed in on given account."))
 				return
 			}
 
@@ -98,13 +97,9 @@ func main() {
 			oldPassword := datahelper.AskPassword("Old password")
 			newPassword := datahelper.AskPassword("New password")
 
-			err := api.ChangePassword(*oldPassword, *newPassword)
+			api.ChangePassword(*oldPassword, *newPassword)
 			zeroizePassowrds(oldPassword, newPassword)
 
-			if err.Err != "" {
-				printErr(31, "Password was not changed", err.Err)
-				return
-			}
 			utils.ColoredPrint(32, "Password was changed!\n")
 
 		// User has massive a skill issue
@@ -119,8 +114,8 @@ func main() {
 		case "":
 			datahelper.ShowStatistics(api.GetStatistics("", false, time.Time{}), false)
 
-			// User wants to also see their top projects and languages
-		case args.StatisticsCommand.SubCommands["top"].Name:
+        // User wants to also see their top projects and languages
+        case args.StatisticsCommand.SubCommands["top"].Name:
 			filterTime := time.Time{}
 			switch utils.NthElement(arguments.OtherCommands, 2) {
 			case "":
@@ -133,13 +128,17 @@ func main() {
 				filterTime = time.Now().AddDate(0, -1, 0)
 
 			default:
-				args.SubCommandUsage(args.StatisticsCommand, args.StatisticsCommand.SubCommands["top"])
+				args.SubCommandUsage(
+                    args.StatisticsCommand, 
+                    args.StatisticsCommand.SubCommands["top"],
+                )
 				return
 			}
 			datahelper.ShowStatistics(api.GetStatistics("", true, filterTime), true)
 
 		default:
 			args.CommandUsage(args.StatisticsCommand)
+            return
 		}
 
 	case args.FriendsCommand.Name:
@@ -167,12 +166,13 @@ func main() {
 				friendcode = arguments.OtherCommands[2]
 			}
 
-			err := api.AddFriend(friendcode)
+			friend, err := api.AddFriend(friendcode)
 			if err.Err != "" {
 				printErr(31, "Friend left unadded", err.Err)
 				return
 			}
 			utils.ColoredPrint(32, "Friend added!\n")
+			datahelper.ShowFriend(friend)
 
 		case args.FriendsCommand.SubCommands["remove"].Name:
 			var friendcode string
@@ -182,11 +182,7 @@ func main() {
 				friendcode = arguments.OtherCommands[2]
 			}
 
-			err := api.RemoveFriend(friendcode)
-			if err.Err != "" {
-				printErr(31, "Friend could not be removed", err.Err)
-				return
-			}
+			api.RemoveFriend(friendcode)
 			utils.ColoredPrint(32, "Friend removed!\n")
 
 		default:
@@ -195,12 +191,39 @@ func main() {
 
 	case args.UserCommand.Name:
 		if arguments.SubCommand == "" {
-			args.UserUsage()
+			args.CommandUsage(args.UserCommand)
 			return
 		}
 
-		datahelper.ShowStatistics(
-			api.GetStatistics(arguments.SubCommand, false, time.Time{}), false)
+        switch utils.NthElement(arguments.OtherCommands, 2) {
+        case "":
+            datahelper.ShowStatistics(api.GetStatistics(arguments.SubCommand, false, time.Time{}), false)
+        case "top":
+            filterTime := time.Time{}
+            switch utils.NthElement(arguments.OtherCommands, 3) {
+            case "":
+
+            case "pastWeek":
+                filterTime = time.Now().AddDate(0, 0, -7)
+
+            case "pastMonth":
+                filterTime = time.Now().AddDate(0, -1, 0)
+
+            default:
+                args.SubCommandUsage(
+                    args.UserCommand, 
+                    args.UserCommand.SubCommands["<user>"],
+                )
+                return
+            }
+            datahelper.ShowStatistics(api.GetStatistics(arguments.SubCommand, true, filterTime), true)
+        default:
+            args.SubCommandUsage(
+                args.UserCommand, 
+                args.UserCommand.SubCommands["<user>"],
+            )
+            return
+        }
 
 	default:
 		args.Usage()

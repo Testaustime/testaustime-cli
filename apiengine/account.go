@@ -36,10 +36,7 @@ func (a *Api) Login(
 
 	res := a.postRequest("auth/login", requestJson)
 	defer res.Body.Close()
-	if res.StatusCode != 200 {
-		utils.Check(json.NewDecoder(res.Body).Decode(&errResponse))
-		return response, errResponse
-	}
+	verifyResponse(res, 200)
 
 	utils.Check(json.NewDecoder(res.Body).Decode(&response))
 	return response, errResponse
@@ -63,12 +60,10 @@ func (a *Api) Register(
 
 	res := a.postRequest("auth/register", requestJson)
 	defer res.Body.Close()
-	if res.StatusCode != 200 {
-		utils.Check(json.NewDecoder(res.Body).Decode(&errResponse))
-		return response, errResponse
-	}
+	verifyResponse(res, 200)
 
 	utils.Check(json.NewDecoder(res.Body).Decode(&response))
+
 	return response, errResponse
 }
 
@@ -77,7 +72,7 @@ func (a *Api) Register(
 func (a *Api) ChangePassword(
 	oldPassword,
 	newPassword string,
-) (errResponse ErrorResponse) {
+) {
 	requestJson, err := json.Marshal(struct {
 		Old string `json:"old"`
 		New string `json:"new"`
@@ -89,9 +84,7 @@ func (a *Api) ChangePassword(
 
 	res := a.postRequest("auth/changepassword", requestJson)
 	defer res.Body.Close()
-	utils.Check(json.NewDecoder(res.Body).Decode(&errResponse))
-
-	return errResponse
+	verifyResponse(res, 200)
 }
 
 // GetAuthtoken returns current authentication token
@@ -103,8 +96,8 @@ func (a *Api) GetAuthtoken() string {
 // returns it. Request is made using old authentication token.
 func (a *Api) NewAuthtoken() string {
 	res := a.postRequest("auth/regenerate", nil)
-	verifyRequest(res.StatusCode, 200)
 	defer res.Body.Close()
+	verifyResponse(res, 200)
 
 	response := struct {
 		Token string
@@ -119,8 +112,8 @@ func (a *Api) NewAuthtoken() string {
 // token.
 func (a *Api) NewFriendcode() string {
 	res := a.postRequest("friends/regenerate", nil)
-	verifyRequest(res.StatusCode, 200)
 	defer res.Body.Close()
+	verifyResponse(res, 200)
 
 	response := struct {
 		FriendCode string `json:"friend_code"`

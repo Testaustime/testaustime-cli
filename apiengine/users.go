@@ -15,7 +15,7 @@ type User struct {
 
 func (a *Api) GetProfile() (user User) {
 	res := a.getRequest("users/@me")
-	verifyRequest(res.StatusCode, 200)
+	verifyResponse(res, 200)
 	defer res.Body.Close()
 
 	utils.Check(json.NewDecoder(res.Body).Decode(&user))

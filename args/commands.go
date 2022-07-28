@@ -1,11 +1,11 @@
 package args
 
+
 type PossibleValue struct {
 	Name string
 	Info string
 }
 
-// SubCommand is a structure used for subcommands.
 type SubCommand struct {
 	Name           string
 	Info           string
@@ -57,8 +57,8 @@ var StatisticsCommand = Command{
 			Name: "top",
 			Info: "show top languages and projects",
 			PossibleValues: []PossibleValue{
-				PossibleValue{"pastWeek", "show past week's top statistics"},
-				PossibleValue{"pastMonth", "show past month's top statistics"},
+				{"pastWeek", "show past week's top statistics"},
+				{"pastMonth", "show past month's top statistics"},
 			},
 		},
 	},
@@ -90,7 +90,12 @@ var FriendsCommand = Command{
 var UserCommand = Command{
 	Name:        "getuser",
 	Info:        "show specific friend's statistics",
-	SubCommands: map[string]SubCommand{},
+	SubCommands: map[string]SubCommand{
+        "<user>": {
+            Name: "<user>",
+            Info: "show data for specific user",
+        },
+    },
 }
 
 var Commands = []Command{
