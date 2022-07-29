@@ -1,0 +1,30 @@
+# testaustime-cli configuration file
+#
+# Most of these options are not important, but may 
+# help in customizing the program.
+# There is really small amount of any additional options, so I would
+# suggest you to read their descriptions. Some nice experimental
+# features can be enabled there ;)
+
+# NOT REQUIRED
+# Your testaustime authentication token is set here.
+#
+# The CLI handles this field and has support
+# for username and password authentication.
+# You will see this change when logging in to other accounts.
+token="YourTestaustimeAuthToken"
+
+# NOT REQUIRED
+# This converts specified fields to lowercase.
+# This is extremely useful in situations where you got two editors
+# and other one's name has the same alphabets typed in slightly 
+# different case.
+caseInsensitiveFields = [ "projectName", "editorName" ]
+
+# NOT REQUIRED
+# Custom testaustime API instance. 
+# You can specify this to be your selfhosted instance, was
+# it either private or public. 
+# Empty string here is always replaced with current 
+# shared production instance.
+apiurl="https://api.testaustime.fi"
