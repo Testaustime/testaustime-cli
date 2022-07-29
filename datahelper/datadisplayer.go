@@ -10,25 +10,40 @@ func Show(key string, timeCoded float32, color int) {
 	printField(key, rawTimeToHumanReadable(timeCoded), color)
 }
 
-func ShowStatistics(stats apiengine.Statistics, showTop bool) {
+func ShowStatistics(stats apiengine.Statistics, showTop bool, highlighted int) {
+    notActiveColor := 37
+    color := notActiveColor
+    var i int
+    checkColor := func(currentIndex int) {
+        currentIndex++
+        if currentIndex == highlighted {
+            color = 32
+        } else if currentIndex > highlighted {
+            color = notActiveColor
+        }
+        i = currentIndex
+    }
+
 	printBold("Coding statistics")
-	printField("Past 24h", rawTimeToHumanReadable(stats.Today), 32)
-	printField("Past week", rawTimeToHumanReadable(stats.PastWeek), 37)
-	printField("Past month", rawTimeToHumanReadable(stats.PastMonth), 37)
-	printField("All time", rawTimeToHumanReadable(stats.AllTime), 37)
+
+    checkColor(i)
+	printField("All time", rawTimeToHumanReadable(stats.AllTime), color)
+
+    checkColor(i)
+	printField("Past 24h", rawTimeToHumanReadable(stats.Today), color)
+
+    checkColor(i)
+	printField("Past week", rawTimeToHumanReadable(stats.PastWeek), color)
+
+    checkColor(i)
+	printField("Past month", rawTimeToHumanReadable(stats.PastMonth), color)
+
 
 	if showTop {
-		printBold("\nTop languages")
-		showList(stats.TopLanguages)
-
-		printBold("\nTop projects")
-		showList(stats.TopProjects)
-
-		printBold("\nTop hosts")
-		showList(stats.TopHosts)
-
-		printBold("\nTop editors")
-		showList(stats.TopEditors)
+		showList("Top languages", stats.TopLanguages)
+		showList("Top projects", stats.TopProjects)
+		showList("Top hosts", stats.TopHosts)
+		showList("Top editors", stats.TopEditors)
 	}
 }
 

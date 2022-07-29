@@ -20,6 +20,7 @@ type DateFormat struct {
 type Api struct {
 	token string
 	url   string
+    caseInsensitiveFields []string
 }
 
 var MeasureTime bool = false
@@ -28,10 +29,11 @@ var ctLayout string = "2006-01-02T15:04:05"
 // New creates a new Api struct with given parameters.
 // if url is empty string, it will be replaced with
 // current production api server.
-func New(token, url string) Api {
+func New(token, url string, caseInsensitiveFields []string) Api {
 	return Api{
 		token,
 		utils.StringOr(url, "https://api.testaustime.fi"),
+        caseInsensitiveFields,
 	}
 }
 
@@ -48,7 +50,9 @@ func verifyResponse(res *http.Response, wantedStatusCode int) {
 
 	switch res.StatusCode {
 	case http.StatusUnauthorized:
-		logger.Error(errors.New("Request failed. You are not authorized."))
+		logger.Error(errors.New(
+            "Request failed: you are not authorized",
+        ))
 
 	default:
 		logger.Error(fmt.Errorf("Request failed: \"%s\" (%d)", errResponse.Err,
@@ -73,6 +77,7 @@ func sendRequest(client *http.Client, req *http.Request) (*http.Response, error)
 	logger.Info(fmt.Sprintf(
 		"Response size: %s", responseSize(float32(res.ContentLength))))
 	logger.Info("")
+
 	return res, err
 }
 

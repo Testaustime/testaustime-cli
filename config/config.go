@@ -12,16 +12,18 @@ type Config struct {
 	file   string
 	Token  string
 	ApiUrl string
+    CaseInsensitiveFields []string
 }
 
 // New returns a new Config struct with given parameters.
 // if apiUrl is empty string, it will be later replaced with current
 // production server.
-func New(file, token, apiUrl string) Config {
+func New(file, token, apiUrl string, CaseInsensitiveFields []string) Config {
 	return Config{
 		file,
 		token,
 		apiUrl,
+        CaseInsensitiveFields,
 	}
 }
 
@@ -34,9 +36,10 @@ func (c *Config) UpdateField(field *string, newValue string) {
 	utils.Check(err)
 	defer fhandle.Close()
 
-	utils.Check(toml.NewEncoder(fhandle).Encode(map[string]string{
+	utils.Check(toml.NewEncoder(fhandle).Encode(map[string]any{
 		"token":  c.Token,
 		"apiurl": c.ApiUrl,
+        "caseInsensitiveFields": c.CaseInsensitiveFields,
 	}))
 }
 
@@ -49,7 +52,7 @@ func GetConfiguration(configFileOverride string) (config Config) {
 	_, err := toml.DecodeFile(configFile, &config)
 	utils.Check(err)
 
-	return New(configFile, config.Token, config.ApiUrl)
+	return New(configFile, config.Token, config.ApiUrl, config.CaseInsensitiveFields)
 }
 
 // resolveConfigPath will resolve configuration path using standards
@@ -59,5 +62,6 @@ func resolveConfigPath() string {
 	if xdg_cfg_home != "" {
 		globalConfigDir = xdg_cfg_home
 	}
+
 	return path.Join(globalConfigDir, "testaustime-cli/config.toml")
 }

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"crypto/rand"
 	"errors"
 	"fmt"
 	"time"
@@ -23,19 +24,19 @@ func main() {
 	cfg := config.GetConfiguration(arguments.AlternateConfigFile)
 
 	// apiengine
-	api := apiengine.New(cfg.Token, cfg.ApiUrl)
+	api := apiengine.New(cfg.Token, cfg.ApiUrl, cfg.CaseInsensitiveFields)
 
 	switch arguments.Command {
 	// account
 	case args.AccountCommand.Name:
 		switch arguments.SubCommand {
 
-		// User wants to see his account information
+		// User wants to see his account's information
 		case "":
 			userProfile := api.GetProfile()
 			datahelper.ShowAccount(userProfile)
 
-			// User wants to login
+        // User wants to login
 		case args.AccountCommand.SubCommands["login"].Name:
 			var username string
 			if len(arguments.OtherCommands) < 3 {
@@ -48,7 +49,9 @@ func main() {
 				return
 			}
 
-			result, status := api.Login(username, *datahelper.AskPassword(""))
+            password := datahelper.AskPassword("")
+			result, status := api.Login(username, *password)
+            zeroizePasswords(password)
 			if status.Err != "" {
 				printErr(31, "Login failed", status.Err)
 				break
@@ -57,18 +60,17 @@ func main() {
 			utils.ColoredPrint(32, "Login succeeded and credinteals were saved!\n")
 			cfg.UpdateField(&cfg.Token, result.Token)
 
-			// User wants to register a new account
+		// User wants to register a new account
 		case args.AccountCommand.SubCommands["register"].Name:
 			var username string
 			if len(arguments.OtherCommands) < 3 {
 				username = datahelper.AskInput("New username")
 			} else {
-				username = arguments.OtherCommands[2]
-			}
+				username = arguments.OtherCommands[2] }
 
 			password := datahelper.AskPassword("")
 			result, status := api.Register(username, *password)
-			zeroizePassowrds(password)
+			zeroizePasswords(password)
 			if status.Err != "" {
 				printErr(31, "Registration failed", status.Err)
 				break
@@ -77,28 +79,28 @@ func main() {
 			utils.ColoredPrint(32, "Registration succeeded and credinteals were saved!\n")
 			cfg.UpdateField(&cfg.Token, result.Token)
 
-			// User queries their current authentication token
+		// User queries their current authentication token
 		case args.AccountCommand.SubCommands["token"].Name:
 			utils.ColoredPrint(35, fmt.Sprintf("%s\n", api.GetAuthtoken()))
 
-			// User wants to generate a new authentication token
+		// User wants to generate a new authentication token
 		case args.AccountCommand.SubCommands["newToken"].Name:
 			token := api.NewAuthtoken()
 			utils.ColoredPrint(35, fmt.Sprintf("%s\n", token))
 			cfg.UpdateField(&cfg.Token, token)
 
-			// User wants to generate a new friend code
+		// User wants to generate a new friend code
 		case args.AccountCommand.SubCommands["newFriendcode"].Name:
 			token := api.NewFriendcode()
 			utils.ColoredPrint(35, fmt.Sprintf("ttfc_%s\n", token))
 
-			// User wants to change password
+		// User wants to change password
 		case args.AccountCommand.SubCommands["changePassword"].Name:
 			oldPassword := datahelper.AskPassword("Old password")
 			newPassword := datahelper.AskPassword("New password")
 
 			api.ChangePassword(*oldPassword, *newPassword)
-			zeroizePassowrds(oldPassword, newPassword)
+			zeroizePasswords(oldPassword, newPassword)
 
 			utils.ColoredPrint(32, "Password was changed!\n")
 
@@ -112,29 +114,36 @@ func main() {
 
 		// User wants to see their current statistics
 		case "":
-			datahelper.ShowStatistics(api.GetStatistics("", false, time.Time{}), false)
+			datahelper.ShowStatistics(api.GetStatistics("", false, time.Time{}), false, 1)
 
 		// User wants to also see their top projects and languages
 		case args.StatisticsCommand.SubCommands["top"].Name:
 			filterTime := time.Time{}
+            activeField := 1
 			switch utils.NthElement(arguments.OtherCommands, 2) {
 			case "":
 				break
 
 			case "pastWeek":
-				filterTime = time.Now().AddDate(0, 0, -7)
+                activeField = 3
+				filterTime = datahelper.Dates.PastWeek
 
 			case "pastMonth":
-				filterTime = time.Now().AddDate(0, -1, 0)
+                activeField = 4
+				filterTime = datahelper.Dates.PastMonth
 
 			default:
 				args.SubCommandUsage(
 					args.StatisticsCommand,
-					args.StatisticsCommand.SubCommands["top"].SubCommands,
+					args.StatisticsCommand.SubCommands["top"],
 				)
 				return
 			}
-			datahelper.ShowStatistics(api.GetStatistics("", true, filterTime), true)
+			datahelper.ShowStatistics(api.GetStatistics(
+                "", 
+                true, 
+                filterTime,
+            ), true, activeField)
 
 		default:
 			args.CommandUsage(args.StatisticsCommand)
@@ -183,7 +192,7 @@ func main() {
 			}
 
 			api.RemoveFriend(friendcode)
-			utils.ColoredPrint(32, "Friend removed!\n")
+			utils.ColoredPrint(33, "Friend removed!\n")
 
 		default:
 			args.CommandUsage(args.FriendsCommand)
@@ -198,31 +207,44 @@ func main() {
 
 		switch utils.NthElement(arguments.OtherCommands, 2) {
 		case "":
-			datahelper.ShowStatistics(api.GetStatistics(arguments.SubCommand, false, time.Time{}), false)
+			datahelper.ShowStatistics(api.GetStatistics(
+                arguments.SubCommand, 
+                false, 
+                time.Time{},
+            ), false, 0)
 
 		case topCommand.Name:
-			filterTime := time.Time{}
+			var filterTime time.Time
+            activeField := 1
 			switch utils.NthElement(arguments.OtherCommands, 3) {
 			case "":
+			    filterTime = time.Time{}
 
 			case topCommand.SubCommands["pastWeek"].Name:
-				filterTime = time.Now().AddDate(0, 0, -7)
+                activeField = 3
+				filterTime = datahelper.Dates.PastWeek
 
 			case topCommand.SubCommands["pastMonth"].Name:
-				filterTime = time.Now().AddDate(0, -1, 0)
+                activeField = 4
+				filterTime = datahelper.Dates.PastMonth
 
 			default:
 				args.SubCommandUsage(
 					args.UserCommand,
-					topCommand.SubCommands,
+					topCommand,
 				)
 				return
 			}
-			datahelper.ShowStatistics(api.GetStatistics(arguments.SubCommand, true, filterTime), true)
+			datahelper.ShowStatistics(api.GetStatistics(
+                arguments.SubCommand, 
+                true, 
+                filterTime,
+            ), true, activeField)
+
 		default:
 			args.SubCommandUsage(
 				args.UserCommand,
-				args.UserCommand.SubCommands["<user>"].SubCommands,
+				args.UserCommand.SubCommands["<user>"],
 			)
 			return
 		}
@@ -239,10 +261,11 @@ func printErr(color int, errtype, errmsg string) {
 
 }
 
-func zeroizePassowrds[T *string](x ...T) {
-	for _, p := range x {
-		for i := 0; i < 128; i++ {
-			*p += "\x00"
-		}
+func zeroizePasswords[T *string](passwords ...T) {
+    blk := make([]byte, 128)
+	for _, password := range passwords {
+        _, err := rand.Read(blk)
+        utils.Check(err)
+        *password = string(blk)
 	}
 }

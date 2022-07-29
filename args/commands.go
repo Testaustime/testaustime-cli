@@ -14,7 +14,7 @@ type Command struct {
 
 var AccountCommand = Command{
 	Name: "account",
-	Info: "show account information",
+	Info: "manage accounts",
 	SubCommands: map[string]SubCommand{
 		"register": {
 			Name: "register",
@@ -45,19 +45,15 @@ var AccountCommand = Command{
 
 var StatisticsCommand = Command{
 	Name: "statistics",
-	Info: "show coding statistics",
+	Info: "get coding statistics",
 	SubCommands: map[string]SubCommand{
-		"top": {
-			Name:        "top",
-			Info:        "show top languages and projects",
-			SubCommands: blaa,
-		},
+        "top": topSubCommand,
 	},
 }
 
 var FriendsCommand = Command{
 	Name: "friends",
-	Info: "show friends' statistics",
+	Info: "get friends' coding statistics",
 	SubCommands: map[string]SubCommand{
 		"pastMonth": {
 			Name: "pastMonth",
@@ -80,17 +76,13 @@ var FriendsCommand = Command{
 
 var UserCommand = Command{
 	Name: "getuser",
-	Info: "show specific friend's statistics",
+	Info: "get specific friend's statistics",
 	SubCommands: map[string]SubCommand{
 		"<user>": {
 			Name: "<user>",
 			Info: "show data for specific user",
 			SubCommands: map[string]SubCommand{
-				"top": {
-					Name:        "top",
-					Info:        "show top statistics",
-					SubCommands: blaa,
-				},
+				"top": topSubCommand,
 			},
 		},
 	},
@@ -103,7 +95,13 @@ var Commands = []Command{
 	UserCommand,
 }
 
-var blaa = map[string]SubCommand{
+var topSubCommand = SubCommand{
+    Name:        "top",
+    Info:        "show top languages and projects",
+    SubCommands: topSubCommands,
+}
+
+var topSubCommands = map[string]SubCommand{
 	"pastWeek": {
 		Name:        "pastWeek",
 		Info:        "show past week's top statistics",

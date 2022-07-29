@@ -2,6 +2,7 @@ package datahelper
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/romeq/testaustime-cli/apiengine"
 	"github.com/romeq/testaustime-cli/logger"
@@ -10,13 +11,21 @@ import (
 
 // TopMaximum
 var TopMaximum = 5
+var Dates = struct{
+    PastWeek time.Time
+    PastMonth time.Time
+}{
+    PastWeek: time.Now().AddDate(0, 0, -7),
+    PastMonth: time.Now().AddDate(0, -1, 0),
+}
 
-func showList(list apiengine.TopStatsList) {
+func showList(message string, list apiengine.TopStatsList) {
 	if len(list) == 0 {
-		printField("Empty!", "This list is currently empty.", 37)
-
 		return
 	}
+
+    fmt.Println()
+    printBold(message)
 	for i, item := range list {
 		if i >= TopMaximum {
 			break

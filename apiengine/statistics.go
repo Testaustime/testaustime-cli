@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"sort"
+	"strings"
 	"time"
 
 	"github.com/romeq/testaustime-cli/utils"
@@ -38,18 +39,21 @@ type Statistics struct {
 type TopStatsList []topStats
 type apiresponse []heartbeatStruct
 
-func (a *Api) GetStatistics(username string, latest bool, since time.Time) Statistics {
-	res := a.getRequest(fmt.Sprintf("users/%s/activity/data", utils.StringOr(username, "@me")))
+func (a *Api) GetStatistics(username string, topLists bool, since time.Time) Statistics {
+	res := a.getRequest(fmt.Sprintf(
+        "users/%s/activity/data", 
+        utils.StringOr(username, "@me"),
+    ))
 	verifyResponse(res, 200)
 	defer res.Body.Close()
 
 	var responseJson apiresponse
 	utils.Check(json.NewDecoder(res.Body).Decode(&responseJson))
 
-	return calculateCodingStatistics(responseJson, latest, since)
+	return a.calculateCodingStatistics(responseJson, topLists, since)
 }
 
-func calculateCodingStatistics(
+func (a *Api) calculateCodingStatistics(
 	rawdata apiresponse,
 	shouldGetTopStatistics bool,
 	since time.Time,
@@ -59,6 +63,14 @@ func calculateCodingStatistics(
 		if heartbeat.Duration == 0 {
 			continue
 		}
+
+        for _, x := range a.caseInsensitiveFields {
+            if x == "editorName" {
+                heartbeat.EditorName = strings.ToLower(heartbeat.EditorName)
+            } else if x == "projectName" {
+                heartbeat.ProjectName = strings.ToLower(heartbeat.ProjectName)
+            }
+        }
 
 		parsedTime, err := time.Parse(ctLayout, heartbeat.StartTime)
 		utils.Check(err)

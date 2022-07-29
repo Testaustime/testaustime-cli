@@ -24,11 +24,11 @@ func CommandUsage(command Command) {
 }
 
 // SubCommandUsage prints command usage for a specific command
-func SubCommandUsage(command Command, subcommand map[string]SubCommand) {
+func SubCommandUsage(command Command, subcommand SubCommand) {
 	fmt.Print(
-		formatUsage(fmt.Sprintf("%s %s", command.Name, subcommand), "[options]"),
+		formatUsage(fmt.Sprintf("%s %s", command.Name, subcommand.Name), "[subcommand]"),
 		"\n", flags(), "\n",
-		formatSubCommands(&subcommand),
+		formatSubCommands(&subcommand.SubCommands),
 	)
 }
 
@@ -58,7 +58,7 @@ func formatCommands(commands *[]Command) (result string) {
 // formatSubCommands prints subcommands header and usage of command's every subcommand.
 // If no subcommands are given, it will result in an empty string.
 func formatSubCommands(c *map[string]SubCommand) (result string) {
-	if len(*c) == 0 {
+	if *c == nil {
 		return result
 	}
 
@@ -66,7 +66,6 @@ func formatSubCommands(c *map[string]SubCommand) (result string) {
 	for _, i := range *c {
 		r := i.Name
 		result += fmt.Sprintf("  %s \t %s\n", r, coloredString(i.Info, lightColor))
-		formatSubCommands(&i.SubCommands)
 	}
 	return result + "\n"
 }
