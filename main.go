@@ -111,12 +111,12 @@ func main() {
 
             case arguments.LeaderboardCommand.SubCommands["create"].Name:
                 name := nthElOrInput("Leaderboard name", args.OtherCommands, 3)
-                token := api.NewLeaderboard(name)
-                utils.ColoredPrint(35, fmt.Sprintf("ttfic_%s\n", token.Code))
+                invite := api.NewLeaderboard(name)
+                utils.ColoredPrint(35, fmt.Sprintf("ttfic_%s\n", invite.Code))
 
             case arguments.LeaderboardCommand.SubCommands["delete"].Name:
                 utils.ColoredPrint(31, "Hey you! ")
-                fmt.Println("This process cannot be reversed. Make sure there is nothing worth to lose before deleting.")
+                fmt.Println("This process cannot be reversed. Make sure there is nothing to lose before deleting.")
                 name := nthElOrInput("Leaderboard name", args.OtherCommands, 3)
                 nameConfirm := datahelper.AskInput("Confirm leaderboard name to delete")
                 if name != nameConfirm {
@@ -128,6 +128,15 @@ func main() {
 
             case arguments.LeaderboardCommand.SubCommands["leave"].Name:
                 api.LeaveLeaderboard(nthElOrInput("Leaderboard name", args.OtherCommands, 3))
+
+            case arguments.LeaderboardCommand.SubCommands["regenerate"].Name:
+                invitecode := api.RegenerateLeaderboardInvite(nthElOrInput(
+                    "Leaderboard name", 
+                    args.OtherCommands,
+                    3,
+                ))
+                utils.ColoredPrint(35, fmt.Sprintf("ttfic_%s\n", invitecode.Code))
+
 
             case arguments.LeaderboardCommand.SubCommands["kick"].Name:
                 ldname := nthElOrInput("Leaderboard name", args.OtherCommands, 3)

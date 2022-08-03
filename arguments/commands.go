@@ -86,6 +86,11 @@ var LeaderboardCommand = Command{
             Info: "leave a leaderboard",
             SubCommands: map[string]SubCommand{},
         },
+        "regenerate": {
+            Name: "regenerate",
+            Info: "regenerate a leaderboard invite token",
+            SubCommands: map[string]SubCommand{},
+        },
         "kick": {
             Name: "kick",
             Info: "Kick a member from a leaderboard",

@@ -97,6 +97,15 @@ func (a *Api) DeleteLeaderboard(name string) {
     defer res.Body.Close()
 }
 
+func (a *Api) RegenerateLeaderboardInvite(name string) (r InviteCode) {
+    res := a.postRequest(fmt.Sprintf("leaderboards/%s/regenerate", name), []byte{})
+    verifyResponse(res, 200)
+    defer res.Body.Close()
+
+    utils.Check(json.NewDecoder(res.Body).Decode(&r))
+    return r
+}
+
 func (l *Leaderboard) SortMembersByTime() []LeaderboardUser {
 	sortedArr := l.Members
 	sort.Slice(sortedArr, func(i, j int) bool {

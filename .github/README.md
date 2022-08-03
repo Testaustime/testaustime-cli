@@ -88,6 +88,7 @@ Show leaderboard data
 - Leave from a leaderboard
 - Delete a leaderboard
 - Kick a member
+- Regenerate invite code
 
 ## Contributing
 I am always pleased with more contributors in this project.
