@@ -30,6 +30,9 @@ func main() {
 	api := apiengine.New(token, cfg.ApiUrl, cfg.CaseInsensitiveFields)
 
 	switch args.Command {
+    case "summary":
+        datahelper.ShowSummary(api.Summary(args.SubCommand))
+
 	case arguments.HelpCommand.Name:
 		for _, command := range arguments.Commands {
 			if args.SubCommand == command.Name {
@@ -46,7 +49,7 @@ func main() {
 			userProfile := api.Profile()
 			datahelper.ShowAccount(userProfile)
 
-			// User wants to login
+		// User wants to login
 		case arguments.AccountCommand.SubCommands["login"].Name:
 			username := nthElOrInput("Username", args.OtherCommands, 3)
 

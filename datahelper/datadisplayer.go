@@ -51,3 +51,4 @@ func ShowAccount(user apiengine.User) {
 	printField("Registration date", user.RegTime.Format(time.RFC1123), 37)
 	printField("Friend code", "ttfc_"+user.FriendCode, 37)
 }
+

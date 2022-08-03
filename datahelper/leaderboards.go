@@ -18,9 +18,9 @@ func ShowLeaderboards(leaderboards apiengine.LeaderboardList) {
 	}
 }
 
-func ShowLeaderboard(leaderboard apiengine.Leaderboard, highlightedUsername string) {
-	printField("Name", leaderboard.Name, 32)
-	printField("Invite", fmt.Sprintf("ttlic_%s", leaderboard.Invite), 37)
+func ShowLeaderboard(leaderboard apiengine.Leaderboard, username string) {
+	printField("Leaderboard name", leaderboard.Name, 32)
+	printField("Invite code", fmt.Sprintf("ttlic_%s", leaderboard.Invite), 37)
 	printField("Creation time", leaderboard.CreationTime, 37)
 
 	if len(leaderboard.Members) == 0 {
@@ -28,12 +28,26 @@ func ShowLeaderboard(leaderboard apiengine.Leaderboard, highlightedUsername stri
 		return
 	}
 
+    rank := 0
+    sortedmembers := leaderboard.SortMembersByTime()
+    for i, x := range sortedmembers {
+        if x.Username == username {
+            rank = i+1
+            break
+        }
+    }
+
+	printField("Your rank", prettyPrintRank(rank), 37)
 	utils.ColoredPrint(32, "\nMembers on this leaderboard\n")
-	for _, user := range leaderboard.SortMembersByTime() {
+	for i, user := range sortedmembers {
+        if i == 50 {
+            break
+        }
+
 		color := 37
-		if user.Admin && user.Username == highlightedUsername {
+		if user.Admin && user.Username == username {
 			color = 33
-		} else if user.Username == highlightedUsername {
+		} else if user.Username == username {
 			color = 32
 		} else if user.Admin {
 			color = 31
@@ -41,3 +55,15 @@ func ShowLeaderboard(leaderboard apiengine.Leaderboard, highlightedUsername stri
 		printField(user.Username, rawTimeToHumanReadable(float32(user.TimeCoded)/60), color)
 	}
 }
+
+func prettyPrintRank(rank int) string {
+    if rank == 1 {
+        return "1st! 🥇"
+    } else if rank == 2 {
+        return "2nd 🥈"
+    } else if rank == 3 {
+        return "3rd 🥉"
+    }
+    return fmt.Sprintf("%dth", rank)
+}
+
