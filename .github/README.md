@@ -94,10 +94,6 @@ Show leaderboard data
 I am always pleased with more contributors in this project.
 I'd appreciate if you would make sure of following things before opening a new pull request:
 
-- `go.mod` doesn't contain any libraries that are not used `go mod tidy`
-- code is formatted with gofmt
-- code builds :) `make build`
-- all tests pass `make test`
-- linter has no issues `make lint`
+- You've ran `make beforecommit` and it didn't result in an error
 - `.github/README.md` is up to date with your pull request
 
