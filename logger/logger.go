@@ -11,7 +11,7 @@ var ColorsEnabled bool = true
 
 func Error(err error) {
 	logMessage(errLogger, fmt.Sprint(
-		coloredType("Whoopsie, an error occured :( !", 91),
+        coloredType("Whoopsie, an error occured! :(", 91),
 		err.Error(),
 	))
 	os.Exit(1)

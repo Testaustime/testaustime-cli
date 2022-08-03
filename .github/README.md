@@ -28,19 +28,14 @@ All coding data is fetched from the backend server you have configured in this p
 **Application telemetries**
 This application doesn't collect any telemetries as of now
 
-
 ## Installation
 
 ```sh
 git clone https://github.com/Testaustime/testaustime-cli
 cd testaustime-cli
+make install
 
-# install config
-mkdir -p ~/.config/testaustime-cli
-cp configtemplate.toml ~/.config/testaustime-cli/config.toml
-
-# install dependencies and compile binary
-make clean install
+testaustime --help
 ```
 
 ## Features
@@ -83,19 +78,21 @@ Show specific friend's coding statistics
 - All time
 - Top languages, projects, editors and hosts
 
+### Leaderboards
+Show leaderboard data
 
+- Joined leaderboards
+- Create a new leaderboard
+- Join an existing leaderboard
 
 ## Contributing
 
 I am always pleased with more contributors in this project.
-I'd appreciate if you would make sure following things are fine before making a new pull request:
+I'd appreciate if you would make sure of following things before opening a new pull request:
 
-- `go.mod` shall not contain any libraries that are not used
-  - `go mod tidy`
-- code builds :) 
-  - `make build`
-- all tests shall pass 
-  - `make test`
-- linter has no issues
-  - `golangci-lint run`
+- `go.mod` doesn't contain any libraries that are not used `go mod tidy`
+- code is formatted with gofmt
+- code builds :) `make build`
+- all tests pass `make test`
+- linter has no issues `make lint`
 - `.github/README.md` is up to date with your pull request

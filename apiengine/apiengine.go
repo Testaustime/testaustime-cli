@@ -51,7 +51,7 @@ func verifyResponse(res *http.Response, wantedStatusCode int) {
 	switch res.StatusCode {
 	case http.StatusUnauthorized:
 		logger.Error(errors.New(
-            "Request failed: you are not authorized",
+            "You are not authorized",
         ))
 
 	default:
@@ -60,7 +60,8 @@ func verifyResponse(res *http.Response, wantedStatusCode int) {
 	}
 }
 
-//
+// sendRequest sends request with given client and measures time if 
+// wanted
 func sendRequest(client *http.Client, req *http.Request) (*http.Response, error) {
 	if !MeasureTime {
 		return client.Do(req)

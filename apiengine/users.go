@@ -13,7 +13,7 @@ type User struct {
 	FriendCode string     `json:"friend_code"`
 }
 
-func (a *Api) GetProfile() (user User) {
+func (a *Api) Profile() (user User) {
 	res := a.getRequest("users/@me")
 	verifyResponse(res, 200)
 	defer res.Body.Close()

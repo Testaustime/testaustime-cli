@@ -26,7 +26,7 @@ type FriendsCodingTime struct {
 type Friends []Friend
 
 // Get list of friends
-func (a *Api) GetFriends() (friends Friends) {
+func (a *Api) Friends() (friends Friends) {
 	res := a.getRequest("friends/list")
 	verifyResponse(res, 200)
 	defer res.Body.Close()

@@ -68,9 +68,9 @@ func rawTimeToHumanReadable(minutesCoded float32) string {
 
 func printField(key string, value any, color int) {
 	if logger.ColorsEnabled {
-		fmt.Printf("\033[%dm%s\033[0m: %s\n", color, key, value)
+        fmt.Printf("\033[%dm%s\033[0m: %v\n", color, key, value)
 	} else {
-		fmt.Printf("%s: %s\n", key, value)
+        fmt.Printf("%s: %v\n", key, value)
 	}
 }
 

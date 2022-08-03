@@ -39,7 +39,7 @@ type Statistics struct {
 type TopStatsList []topStats
 type apiresponse []heartbeatStruct
 
-func (a *Api) GetStatistics(username string, topLists bool, since time.Time) Statistics {
+func (a *Api) Statistics(username string, topLists bool, since time.Time) Statistics {
 	res := a.getRequest(fmt.Sprintf(
         "users/%s/activity/data", 
         utils.StringOr(username, "@me"),

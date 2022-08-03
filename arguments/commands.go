@@ -1,4 +1,4 @@
-package args
+package arguments
 
 type SubCommand struct {
 	Name        string
@@ -23,6 +23,12 @@ var AccountCommand = Command{
 		"login": {
 			Name: "login",
 			Info: "login to your account with username and password",
+            SubCommands: map[string]SubCommand{
+                "<username>": {
+                    Name: "<username>",
+                    Info: "Specify username for login",
+                },
+            },
 		},
 		"token": {
 			Name: "token",
@@ -48,6 +54,38 @@ var StatisticsCommand = Command{
 	Info: "get coding statistics",
 	SubCommands: map[string]SubCommand{
         "top": topSubCommand,
+	},
+}
+
+var LeaderboardCommand = Command{
+	Name: "leaderboards",
+	Info: "get leaderboards data",
+	SubCommands: map[string]SubCommand{
+        "<name>": {
+            Name: "<name>",
+            Info: "show a leaderboard",
+            SubCommands: map[string]SubCommand{},
+        },
+        "create": {
+            Name: "create",
+            Info: "create a leaderboard",
+            SubCommands: map[string]SubCommand{},
+        },
+        "delete": {
+            Name: "delete",
+            Info: "delete a leaderboard",
+            SubCommands: map[string]SubCommand{},
+        },
+        "join": {
+            Name: "joinboard",
+            Info: "join a leaderboard",
+            SubCommands: map[string]SubCommand{},
+        },
+        "leave": {
+            Name: "leave",
+            Info: "leave a leaderboard",
+            SubCommands: map[string]SubCommand{},
+        },
 	},
 }
 
@@ -91,6 +129,7 @@ var UserCommand = Command{
 var Commands = []Command{
 	AccountCommand,
 	StatisticsCommand,
+    LeaderboardCommand,
 	FriendsCommand,
 	UserCommand,
 }

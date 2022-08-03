@@ -1,16 +1,12 @@
 package config
 
 import (
-	"os"
-	"path"
-
 	"github.com/BurntSushi/toml"
 	"github.com/romeq/testaustime-cli/utils"
 )
 
 type Config struct {
 	file   string
-	Token  string
 	ApiUrl string
     CaseInsensitiveFields []string
 }
@@ -18,50 +14,25 @@ type Config struct {
 // New returns a new Config struct with given parameters.
 // if apiUrl is empty string, it will be later replaced with current
 // production server.
-func New(file, token, apiUrl string, CaseInsensitiveFields []string) Config {
+func New(file, apiUrl string, CaseInsensitiveFields []string) Config {
 	return Config{
 		file,
-		token,
 		apiUrl,
         CaseInsensitiveFields,
 	}
-}
-
-// UpdateField will update field in current Config struct and
-// in configuration file which was used to launch testaustime-cli
-func (c *Config) UpdateField(field *string, newValue string) {
-	*field = newValue
-
-	fhandle, err := os.OpenFile(c.file, os.O_WRONLY|os.O_CREATE, 0644)
-	utils.Check(err)
-	defer fhandle.Close()
-
-	utils.Check(toml.NewEncoder(fhandle).Encode(map[string]any{
-		"token":  c.Token,
-		"apiurl": c.ApiUrl,
-        "caseInsensitiveFields": c.CaseInsensitiveFields,
-	}))
 }
 
 // GetConfiguration will read configuration from configFileOverride.
 // if configFileOverride is empty string, GetConfiguration will resolve
 // configuration path using standard enviroment variables.
 func GetConfiguration(configFileOverride string) (config Config) {
-	configFile := utils.StringOr(configFileOverride, resolveConfigPath())
-
+	configFile := utils.StringOr(configFileOverride, utils.ResolveWantedPath(
+        utils.EnvOrString("$XDG_CONFIG_HOME", "$HOME/.config/"),
+        "config.toml",
+    ))
 	_, err := toml.DecodeFile(configFile, &config)
 	utils.Check(err)
 
-	return New(configFile, config.Token, config.ApiUrl, config.CaseInsensitiveFields)
+	return New(configFile, config.ApiUrl, config.CaseInsensitiveFields)
 }
 
-// resolveConfigPath will resolve configuration path using standards
-func resolveConfigPath() string {
-	globalConfigDir := os.ExpandEnv("$HOME/.config")
-	xdg_cfg_home := os.Getenv("XDG_CONFIG_HOME")
-	if xdg_cfg_home != "" {
-		globalConfigDir = xdg_cfg_home
-	}
-
-	return path.Join(globalConfigDir, "testaustime-cli/config.toml")
-}

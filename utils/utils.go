@@ -37,3 +37,8 @@ func NthElement(list []string, n int) string {
 	}
 	return ""
 }
+
+func EnvOrString(envKey, alt string) string {
+    return StringOr(os.Getenv(envKey), alt)
+}
+

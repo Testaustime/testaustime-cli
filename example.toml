@@ -12,14 +12,14 @@
 # The CLI handles this field and has support
 # for username and password authentication.
 # You will see this change when logging in to other accounts.
-token="YourTestaustimeAuthToken"
+#token="YourTestaustimeAuthToken"
 
 # NOT REQUIRED
 # This converts specified fields to lowercase.
 # This is extremely useful in situations where you got two editors
 # and other one's name has the same alphabets typed in slightly 
 # different case.
-caseInsensitiveFields = [ "projectName", "editorName" ]
+#caseInsensitiveFields = [ "projectName", "editorName" ]
 
 # NOT REQUIRED
 # Custom testaustime API instance. 
@@ -27,4 +27,4 @@ caseInsensitiveFields = [ "projectName", "editorName" ]
 # it either private or public. 
 # Empty string here is always replaced with current 
 # shared production instance.
-apiurl="https://api.testaustime.fi"
+#apiurl="https://api.testaustime.fi"
