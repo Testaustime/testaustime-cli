@@ -17,8 +17,8 @@ func Check(err error) {
 func StringOr(str1, str2 string) string {
 	if str1 != "" {
 		return str1
-    } 
-    return str2
+	}
+	return str2
 }
 
 func ColoredPrint(color int, a ...any) {
@@ -39,6 +39,5 @@ func NthElement(list []string, n int) string {
 }
 
 func EnvOrString(envKey, alt string) string {
-    return StringOr(os.Getenv(envKey), alt)
+	return StringOr(os.Getenv(envKey), alt)
 }
-

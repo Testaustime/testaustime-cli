@@ -18,9 +18,9 @@ type DateFormat struct {
 }
 
 type Api struct {
-	token string
-	url   string
-    caseInsensitiveFields []string
+	token                 string
+	url                   string
+	caseInsensitiveFields []string
 }
 
 var MeasureTime bool = false
@@ -33,7 +33,7 @@ func New(token, url string, caseInsensitiveFields []string) Api {
 	return Api{
 		token,
 		utils.StringOr(url, "https://api.testaustime.fi"),
-        caseInsensitiveFields,
+		caseInsensitiveFields,
 	}
 }
 
@@ -51,8 +51,8 @@ func verifyResponse(res *http.Response, wantedStatusCode int) {
 	switch res.StatusCode {
 	case http.StatusUnauthorized:
 		logger.Error(errors.New(
-            "You are not authorized",
-        ))
+			"You are not authorized",
+		))
 
 	default:
 		logger.Error(fmt.Errorf("Request failed: \"%s\" (%d)", errResponse.Err,
@@ -60,7 +60,7 @@ func verifyResponse(res *http.Response, wantedStatusCode int) {
 	}
 }
 
-// sendRequest sends request with given client and measures time if 
+// sendRequest sends request with given client and measures time if
 // wanted
 func sendRequest(client *http.Client, req *http.Request) (*http.Response, error) {
 	if !MeasureTime {

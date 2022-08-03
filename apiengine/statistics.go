@@ -39,11 +39,12 @@ type Statistics struct {
 type TopStatsList []topStats
 type apiresponse []heartbeatStruct
 
+// Statistics returns statistics for given user
 func (a *Api) Statistics(username string, topLists bool, since time.Time) Statistics {
 	res := a.getRequest(fmt.Sprintf(
-        "users/%s/activity/data", 
-        utils.StringOr(username, "@me"),
-    ))
+		"users/%s/activity/data",
+		utils.StringOr(username, "@me"),
+	))
 	verifyResponse(res, 200)
 	defer res.Body.Close()
 
@@ -53,6 +54,7 @@ func (a *Api) Statistics(username string, topLists bool, since time.Time) Statis
 	return a.calculateCodingStatistics(responseJson, topLists, since)
 }
 
+// calculateCodingStatistics calculates coding statistics since given time
 func (a *Api) calculateCodingStatistics(
 	rawdata apiresponse,
 	shouldGetTopStatistics bool,
@@ -64,13 +66,13 @@ func (a *Api) calculateCodingStatistics(
 			continue
 		}
 
-        for _, x := range a.caseInsensitiveFields {
-            if x == "editorName" {
-                heartbeat.EditorName = strings.ToLower(heartbeat.EditorName)
-            } else if x == "projectName" {
-                heartbeat.ProjectName = strings.ToLower(heartbeat.ProjectName)
-            }
-        }
+		for _, x := range a.caseInsensitiveFields {
+			if x == "editorName" {
+				heartbeat.EditorName = strings.ToLower(heartbeat.EditorName)
+			} else if x == "projectName" {
+				heartbeat.ProjectName = strings.ToLower(heartbeat.ProjectName)
+			}
+		}
 
 		parsedTime, err := time.Parse(ctLayout, heartbeat.StartTime)
 		utils.Check(err)

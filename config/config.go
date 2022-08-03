@@ -6,9 +6,9 @@ import (
 )
 
 type Config struct {
-	file   string
-	ApiUrl string
-    CaseInsensitiveFields []string
+	file                  string
+	ApiUrl                string
+	CaseInsensitiveFields []string
 }
 
 // New returns a new Config struct with given parameters.
@@ -18,7 +18,7 @@ func New(file, apiUrl string, CaseInsensitiveFields []string) Config {
 	return Config{
 		file,
 		apiUrl,
-        CaseInsensitiveFields,
+		CaseInsensitiveFields,
 	}
 }
 
@@ -27,12 +27,11 @@ func New(file, apiUrl string, CaseInsensitiveFields []string) Config {
 // configuration path using standard enviroment variables.
 func GetConfiguration(configFileOverride string) (config Config) {
 	configFile := utils.StringOr(configFileOverride, utils.ResolveWantedPath(
-        utils.EnvOrString("$XDG_CONFIG_HOME", "$HOME/.config/"),
-        "config.toml",
-    ))
+		utils.EnvOrString("$XDG_CONFIG_HOME", "$HOME/.config/"),
+		"config.toml",
+	))
 	_, err := toml.DecodeFile(configFile, &config)
 	utils.Check(err)
 
 	return New(configFile, config.ApiUrl, config.CaseInsensitiveFields)
 }
-

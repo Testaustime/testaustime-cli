@@ -11,12 +11,12 @@ import (
 
 // TopMaximum
 var TopMaximum = 5
-var Dates = struct{
-    PastWeek time.Time
-    PastMonth time.Time
+var Dates = struct {
+	PastWeek  time.Time
+	PastMonth time.Time
 }{
-    PastWeek: time.Now().AddDate(0, 0, -7),
-    PastMonth: time.Now().AddDate(0, -1, 0),
+	PastWeek:  time.Now().AddDate(0, 0, -7),
+	PastMonth: time.Now().AddDate(0, -1, 0),
 }
 
 func showList(message string, list apiengine.TopStatsList) {
@@ -24,8 +24,8 @@ func showList(message string, list apiengine.TopStatsList) {
 		return
 	}
 
-    fmt.Println()
-    printBold(message)
+	fmt.Println()
+	printBold(message)
 	for i, item := range list {
 		if i >= TopMaximum {
 			break
@@ -68,9 +68,9 @@ func rawTimeToHumanReadable(minutesCoded float32) string {
 
 func printField(key string, value any, color int) {
 	if logger.ColorsEnabled {
-        fmt.Printf("\033[%dm%s\033[0m: %v\n", color, key, value)
+		fmt.Printf("\033[%dm%s\033[0m: %v\n", color, key, value)
 	} else {
-        fmt.Printf("%s: %v\n", key, value)
+		fmt.Printf("%s: %v\n", key, value)
 	}
 }
 

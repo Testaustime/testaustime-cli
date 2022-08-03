@@ -22,7 +22,7 @@ or if they are not exactly essential for the program.
 **Your Testaustime data**
 
 Your testaustime data is never sent anywhere except the [open-source backend](https://github.com/Testaustime/testaustime-backend). If you don't want
-to use the shared instance, you can setup your own backend instance. 
+to use the shared instance, you can setup your own backend. 
 All coding data is fetched from the backend server you have configured in this program's configuration file.
 
 **Application telemetries**

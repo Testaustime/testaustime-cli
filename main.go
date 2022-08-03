@@ -20,12 +20,12 @@ func main() {
 	logger.ColorsEnabled = !args.DisableColors
 	apiengine.MeasureTime = args.MeasureRequests
 
-    tokenLocation := utils.ResolveWantedPath(utils.EnvOrString(
-        "$XDG_DATA_HOME",
-        "$HOME/.local/share",
-    ), "token")
+	tokenLocation := utils.ResolveWantedPath(utils.EnvOrString(
+		"$XDG_DATA_HOME",
+		"$HOME/.local/share",
+	), "token")
 
-    token := utils.ReadFile(tokenLocation, true)
+	token := utils.ReadFile(tokenLocation, true)
 	cfg := config.GetConfiguration(args.AlternateConfigFile)
 	api := apiengine.New(token, cfg.ApiUrl, cfg.CaseInsensitiveFields)
 
@@ -40,7 +40,7 @@ func main() {
 
 			// User wants to login
 		case arguments.AccountCommand.SubCommands["login"].Name:
-            username := nthElOrInput("Username", args.OtherCommands, 3)
+			username := nthElOrInput("Username", args.OtherCommands, 3)
 
 			password := datahelper.AskPassword("")
 			result, status := api.Login(username, *password)
@@ -50,13 +50,12 @@ func main() {
 				break
 			}
 
-            utils.WriteFile(tokenLocation, result.Token)
+			utils.WriteFile(tokenLocation, result.Token)
 			utils.ColoredPrint(32, "Login succeeded and credinteals were saved!\n")
-            
 
 		// User wants to register a new account
 		case arguments.AccountCommand.SubCommands["register"].Name:
-            username := nthElOrInput("New username", args.OtherCommands, 3)
+			username := nthElOrInput("New username", args.OtherCommands, 3)
 
 			password := datahelper.AskPassword("")
 			result, status := api.Register(username, *password)
@@ -66,7 +65,7 @@ func main() {
 				break
 			}
 
-            utils.WriteFile(tokenLocation, result.Token)
+			utils.WriteFile(tokenLocation, result.Token)
 			utils.ColoredPrint(32, "Registration succeeded and credinteals were saved!\n")
 
 		// User queries their current authentication token
@@ -77,7 +76,7 @@ func main() {
 		case arguments.AccountCommand.SubCommands["newToken"].Name:
 			token := api.NewAuthtoken()
 			utils.ColoredPrint(35, fmt.Sprintf("%s\n", token))
-            utils.WriteFile(tokenLocation, token)
+			utils.WriteFile(tokenLocation, token)
 
 		// User wants to generate a new friend code
 		case arguments.AccountCommand.SubCommands["newFriendcode"].Name:
@@ -100,54 +99,54 @@ func main() {
 		}
 
 	case arguments.LeaderboardCommand.Name:
-        switch args.SubCommand {
-            case "":
-                leaderboards := api.Leaderboards()
-                datahelper.ShowLeaderboards(leaderboards)
+		switch args.SubCommand {
+		case "":
+			leaderboards := api.Leaderboards()
+			datahelper.ShowLeaderboards(leaderboards)
 
-            case arguments.LeaderboardCommand.SubCommands["join"].Name:
-                code := nthElOrInput("Leaderboard code", args.OtherCommands, 3)
-                api.JoinLeaderboard(code)
+		case arguments.LeaderboardCommand.SubCommands["join"].Name:
+			code := nthElOrInput("Leaderboard code", args.OtherCommands, 3)
+			api.JoinLeaderboard(code)
 
-            case arguments.LeaderboardCommand.SubCommands["create"].Name:
-                name := nthElOrInput("Leaderboard name", args.OtherCommands, 3)
-                invite := api.NewLeaderboard(name)
-                utils.ColoredPrint(35, fmt.Sprintf("ttfic_%s\n", invite.Code))
+		case arguments.LeaderboardCommand.SubCommands["create"].Name:
+			name := nthElOrInput("Leaderboard name", args.OtherCommands, 3)
+			invite := api.NewLeaderboard(name)
+			utils.ColoredPrint(35, fmt.Sprintf("ttfic_%s\n", invite.Code))
 
-            case arguments.LeaderboardCommand.SubCommands["delete"].Name:
-                utils.ColoredPrint(31, "Hey you! ")
-                fmt.Println("This process cannot be reversed. Make sure there is nothing to lose before deleting.")
-                name := nthElOrInput("Leaderboard name", args.OtherCommands, 3)
-                nameConfirm := datahelper.AskInput("Confirm leaderboard name to delete")
-                if name != nameConfirm {
-                    logger.Error(errors.New("The names don't match!"))
-                }
+		case arguments.LeaderboardCommand.SubCommands["delete"].Name:
+			utils.ColoredPrint(31, "Hey you! ")
+			fmt.Println("This process cannot be reversed. Make sure there is nothing to lose before deleting.")
+			name := nthElOrInput("Leaderboard name", args.OtherCommands, 3)
+			nameConfirm := datahelper.AskInput("Confirm leaderboard name to delete")
+			if name != nameConfirm {
+				logger.Error(errors.New("The names don't match!"))
+			}
 
-                api.DeleteLeaderboard(name)
-                utils.ColoredPrint(32, "Leaderboard deleted!\n")
+			api.DeleteLeaderboard(name)
+			utils.ColoredPrint(32, "Leaderboard deleted!\n")
 
-            case arguments.LeaderboardCommand.SubCommands["leave"].Name:
-                api.LeaveLeaderboard(nthElOrInput("Leaderboard name", args.OtherCommands, 3))
+		case arguments.LeaderboardCommand.SubCommands["leave"].Name:
+			api.LeaveLeaderboard(nthElOrInput("Leaderboard name", args.OtherCommands, 3))
 
-            case arguments.LeaderboardCommand.SubCommands["regenerate"].Name:
-                invitecode := api.RegenerateLeaderboardInvite(nthElOrInput(
-                    "Leaderboard name", 
-                    args.OtherCommands,
-                    3,
-                ))
-                utils.ColoredPrint(35, fmt.Sprintf("ttfic_%s\n", invitecode.Code))
+		case arguments.LeaderboardCommand.SubCommands["regenerate"].Name:
+			invitecode := api.RegenerateLeaderboardInvite(nthElOrInput(
+				"Leaderboard name",
+				args.OtherCommands,
+				3,
+			))
+			utils.ColoredPrint(35, fmt.Sprintf("ttfic_%s\n", invitecode.Code))
 
+		case arguments.LeaderboardCommand.SubCommands["kick"].Name:
+			ldname := nthElOrInput("Leaderboard name", args.OtherCommands, 3)
+			uname := nthElOrInput("Username to kick", args.OtherCommands, 4)
+			api.KickMember(ldname, uname)
+			utils.ColoredPrint(32, "The member has been kicked!\n")
 
-            case arguments.LeaderboardCommand.SubCommands["kick"].Name:
-                ldname := nthElOrInput("Leaderboard name", args.OtherCommands, 3)
-                uname := nthElOrInput("Username to kick", args.OtherCommands, 4)
-                api.KickMember(ldname, uname)
-                utils.ColoredPrint(32, "The member has been kicked!\n")
-
-            default:
-                leaderboard := api.Leaderboard(nthElOrInput("Leaderboard name", args.OtherCommands, 2))
-                datahelper.ShowLeaderboard(leaderboard)
-        }
+		default:
+			leaderboard := api.Leaderboard(nthElOrInput("Leaderboard name", args.OtherCommands, 2))
+			userAccount := api.Profile()
+			datahelper.ShowLeaderboard(leaderboard, userAccount.Username)
+		}
 
 	case arguments.StatisticsCommand.Name:
 		switch args.SubCommand {
@@ -208,7 +207,7 @@ func main() {
 			datahelper.ShowFriends(friends.AddSelf(myaccount).PastMonth())
 
 		case arguments.FriendsCommand.SubCommands["add"].Name:
-            friendcode := nthElOrInput("Friend code", args.OtherCommands, 2)
+			friendcode := nthElOrInput("Friend code", args.OtherCommands, 2)
 			friend, err := api.AddFriend(friendcode)
 			if err.Err != "" {
 				printErr(31, "Friend left unadded", err.Err)
@@ -218,7 +217,7 @@ func main() {
 			datahelper.ShowFriend(friend)
 
 		case arguments.FriendsCommand.SubCommands["remove"].Name:
-            friendName := nthElOrInput("Friend's username", args.OtherCommands, 2)
+			friendName := nthElOrInput("Friend's username", args.OtherCommands, 2)
 			api.RemoveFriend(friendName)
 			utils.ColoredPrint(33, "Friend removed!\n")
 
@@ -298,9 +297,8 @@ func zeroizePasswords[T *string](passwords ...T) {
 }
 
 func nthElOrInput(prompt string, bla []string, n int) string {
-    if arg := utils.NthElement(bla, n-1); arg != "" {
-        return arg
-    }
-    return datahelper.AskInput(prompt)
+	if arg := utils.NthElement(bla, n-1); arg != "" {
+		return arg
+	}
+	return datahelper.AskInput(prompt)
 }
-

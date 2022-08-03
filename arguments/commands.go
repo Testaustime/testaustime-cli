@@ -23,12 +23,12 @@ var AccountCommand = Command{
 		"login": {
 			Name: "login",
 			Info: "login to your account with username and password",
-            SubCommands: map[string]SubCommand{
-                "<username>": {
-                    Name: "<username>",
-                    Info: "Specify username for login",
-                },
-            },
+			SubCommands: map[string]SubCommand{
+				"<username>": {
+					Name: "<username>",
+					Info: "Specify username for login",
+				},
+			},
 		},
 		"token": {
 			Name: "token",
@@ -53,7 +53,7 @@ var StatisticsCommand = Command{
 	Name: "statistics",
 	Info: "get coding statistics",
 	SubCommands: map[string]SubCommand{
-        "top": topSubCommand,
+		"top": topSubCommand,
 	},
 }
 
@@ -61,56 +61,53 @@ var LeaderboardCommand = Command{
 	Name: "leaderboards",
 	Info: "get leaderboards data",
 	SubCommands: map[string]SubCommand{
-        "<name>": {
-            Name: "<name>",
-            Info: "show a leaderboard",
-            SubCommands: map[string]SubCommand{},
-        },
-        "create": {
-            Name: "create",
-            Info: "create a leaderboard",
-            SubCommands: map[string]SubCommand{},
-        },
-        "delete": {
-            Name: "delete",
-            Info: "delete a leaderboard",
-            SubCommands: map[string]SubCommand{},
-        },
-        "join": {
-            Name: "joinboard",
-            Info: "join a leaderboard",
-            SubCommands: map[string]SubCommand{},
-        },
-        "leave": {
-            Name: "leave",
-            Info: "leave a leaderboard",
-            SubCommands: map[string]SubCommand{},
-        },
-        "regenerate": {
-            Name: "regenerate",
-            Info: "regenerate a leaderboard invite token",
-            SubCommands: map[string]SubCommand{},
-        },
-        "kick": {
-            Name: "kick",
-            Info: "Kick a member from a leaderboard",
-            SubCommands: map[string]SubCommand{
-                "<name>": {
-                    Name: "<name>",
-                    Info: "Leaderboard name",
-                    SubCommands: map[string]SubCommand{
-                        "<username>": {
-                            Name: "<username>",
-                            Info: "Member name",
-                            SubCommands: map[string]SubCommand{
-
-                            },
-                        },
-                    },
-                },
-            },
-
-        },
+		"<name>": {
+			Name:        "<name>",
+			Info:        "show a leaderboard",
+			SubCommands: map[string]SubCommand{},
+		},
+		"create": {
+			Name:        "create",
+			Info:        "create a leaderboard",
+			SubCommands: map[string]SubCommand{},
+		},
+		"delete": {
+			Name:        "delete",
+			Info:        "delete a leaderboard",
+			SubCommands: map[string]SubCommand{},
+		},
+		"join": {
+			Name:        "joinboard",
+			Info:        "join a leaderboard",
+			SubCommands: map[string]SubCommand{},
+		},
+		"leave": {
+			Name:        "leave",
+			Info:        "leave a leaderboard",
+			SubCommands: map[string]SubCommand{},
+		},
+		"regenerate": {
+			Name:        "regenerate",
+			Info:        "regenerate a leaderboard invite token",
+			SubCommands: map[string]SubCommand{},
+		},
+		"kick": {
+			Name: "kick",
+			Info: "Kick a member from a leaderboard",
+			SubCommands: map[string]SubCommand{
+				"<name>": {
+					Name: "<name>",
+					Info: "Leaderboard name",
+					SubCommands: map[string]SubCommand{
+						"<username>": {
+							Name:        "<username>",
+							Info:        "Member name",
+							SubCommands: map[string]SubCommand{},
+						},
+					},
+				},
+			},
+		},
 	},
 }
 
@@ -154,15 +151,15 @@ var UserCommand = Command{
 var Commands = []Command{
 	AccountCommand,
 	StatisticsCommand,
-    LeaderboardCommand,
+	LeaderboardCommand,
 	FriendsCommand,
 	UserCommand,
 }
 
 var topSubCommand = SubCommand{
-    Name:        "top",
-    Info:        "show top languages and projects",
-    SubCommands: topSubCommands,
+	Name:        "top",
+	Info:        "show top languages and projects",
+	SubCommands: topSubCommands,
 }
 
 var topSubCommands = map[string]SubCommand{

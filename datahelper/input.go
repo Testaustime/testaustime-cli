@@ -21,16 +21,16 @@ func AskInput(prompt string) string {
 
 	result, err := bufio.NewReader(os.Stdin).ReadString('\n')
 	utils.Check(err)
-    result = strings.TrimSpace(string(result))
-    if result == "" {
-        logger.Error(errors.New("You fool, input can't be an empty string!"))
-    }
+	result = strings.TrimSpace(string(result))
+	if result == "" {
+		logger.Error(errors.New("You fool, input can't be an empty string!"))
+	}
 
 	return result
 }
 
 // AskPassword prompts user for hidden input in stdin, most
-// used for passwords. Returns a pointer to spacetrimmed result. 
+// used for passwords. Returns a pointer to spacetrimmed result.
 func AskPassword(prompt string) *string {
 	utils.ColoredPrint(35, utils.StringOr(prompt, "Password"))
 	fmt.Print(": ")
@@ -41,7 +41,7 @@ func AskPassword(prompt string) *string {
 
 	password := strings.TrimSpace(string(bytePassword))
 	if password == "" {
-        logger.Error(errors.New("You fool, password can't be an empty string!"))
+		logger.Error(errors.New("You fool, password can't be an empty string!"))
 	} else if len(password) < 8 || len(password) > 128 {
 		logger.Error(errors.New(
 			"Password has to be between 8 and 128 characters long",

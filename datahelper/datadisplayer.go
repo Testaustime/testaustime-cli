@@ -11,33 +11,32 @@ func Show(key string, timeCoded float32, color int) {
 }
 
 func ShowStatistics(stats apiengine.Statistics, showTop bool, highlighted int) {
-    notActiveColor := 37
-    color := notActiveColor
-    var i int
-    checkColor := func(currentIndex int) {
-        currentIndex++
-        if currentIndex == highlighted {
-            color = 32
-        } else if currentIndex > highlighted {
-            color = notActiveColor
-        }
-        i = currentIndex
-    }
+	notActiveColor := 37
+	color := notActiveColor
+	var i int
+	checkColor := func(currentIndex int) {
+		currentIndex++
+		if currentIndex == highlighted {
+			color = 32
+		} else if currentIndex > highlighted {
+			color = notActiveColor
+		}
+		i = currentIndex
+	}
 
 	printBold("Coding statistics")
 
-    checkColor(i)
+	checkColor(i)
 	printField("All time", rawTimeToHumanReadable(stats.AllTime), color)
 
-    checkColor(i)
+	checkColor(i)
 	printField("Past 24h", rawTimeToHumanReadable(stats.Today), color)
 
-    checkColor(i)
+	checkColor(i)
 	printField("Past week", rawTimeToHumanReadable(stats.PastWeek), color)
 
-    checkColor(i)
+	checkColor(i)
 	printField("Past month", rawTimeToHumanReadable(stats.PastMonth), color)
-
 
 	if showTop {
 		showList("Top languages", stats.TopLanguages)
