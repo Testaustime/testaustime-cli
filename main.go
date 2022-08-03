@@ -30,8 +30,8 @@ func main() {
 	api := apiengine.New(token, cfg.ApiUrl, cfg.CaseInsensitiveFields)
 
 	switch args.Command {
-    case "summary":
-        datahelper.ShowSummary(api.Summary(args.SubCommand))
+	case "summary":
+		datahelper.ShowSummary(api.Summary(args.SubCommand))
 
 	case arguments.HelpCommand.Name:
 		for _, command := range arguments.Commands {

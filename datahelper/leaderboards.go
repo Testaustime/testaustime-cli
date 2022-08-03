@@ -28,21 +28,21 @@ func ShowLeaderboard(leaderboard apiengine.Leaderboard, username string) {
 		return
 	}
 
-    rank := 0
-    sortedmembers := leaderboard.SortMembersByTime()
-    for i, x := range sortedmembers {
-        if x.Username == username {
-            rank = i+1
-            break
-        }
-    }
+	rank := 0
+	sortedmembers := leaderboard.SortMembersByTime()
+	for i, x := range sortedmembers {
+		if x.Username == username {
+			rank = i + 1
+			break
+		}
+	}
 
 	printField("Your rank", prettyPrintRank(rank), 37)
 	utils.ColoredPrint(32, "\nMembers on this leaderboard\n")
 	for i, user := range sortedmembers {
-        if i == 50 {
-            break
-        }
+		if i == 50 {
+			break
+		}
 
 		color := 37
 		if user.Admin && user.Username == username {
@@ -57,13 +57,12 @@ func ShowLeaderboard(leaderboard apiengine.Leaderboard, username string) {
 }
 
 func prettyPrintRank(rank int) string {
-    if rank == 1 {
-        return "1st! 🥇"
-    } else if rank == 2 {
-        return "2nd 🥈"
-    } else if rank == 3 {
-        return "3rd 🥉"
-    }
-    return fmt.Sprintf("%dth", rank)
+	if rank == 1 {
+		return "1st! 🥇"
+	} else if rank == 2 {
+		return "2nd 🥈"
+	} else if rank == 3 {
+		return "3rd 🥉"
+	}
+	return fmt.Sprintf("%dth", rank)
 }
-
