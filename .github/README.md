@@ -87,9 +87,9 @@ Show leaderboard data
 - Show data for a specific leaderboard
 - Leave from a leaderboard
 - Delete a leaderboard
+- Kick a member
 
 ## Contributing
-
 I am always pleased with more contributors in this project.
 I'd appreciate if you would make sure of following things before opening a new pull request:
 
@@ -99,3 +99,4 @@ I'd appreciate if you would make sure of following things before opening a new p
 - all tests pass `make test`
 - linter has no issues `make lint`
 - `.github/README.md` is up to date with your pull request
+

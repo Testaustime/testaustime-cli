@@ -86,6 +86,26 @@ var LeaderboardCommand = Command{
             Info: "leave a leaderboard",
             SubCommands: map[string]SubCommand{},
         },
+        "kick": {
+            Name: "kick",
+            Info: "Kick a member from a leaderboard",
+            SubCommands: map[string]SubCommand{
+                "<name>": {
+                    Name: "<name>",
+                    Info: "Leaderboard name",
+                    SubCommands: map[string]SubCommand{
+                        "<username>": {
+                            Name: "<username>",
+                            Info: "Member name",
+                            SubCommands: map[string]SubCommand{
+
+                            },
+                        },
+                    },
+                },
+            },
+
+        },
 	},
 }
 

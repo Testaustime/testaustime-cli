@@ -104,13 +104,16 @@ func main() {
             case "":
                 leaderboards := api.Leaderboards()
                 datahelper.ShowLeaderboards(leaderboards)
+
             case arguments.LeaderboardCommand.SubCommands["join"].Name:
                 code := nthElOrInput("Leaderboard code", args.OtherCommands, 3)
                 api.JoinLeaderboard(code)
+
             case arguments.LeaderboardCommand.SubCommands["create"].Name:
                 name := nthElOrInput("Leaderboard name", args.OtherCommands, 3)
                 token := api.NewLeaderboard(name)
                 utils.ColoredPrint(35, fmt.Sprintf("ttfic_%s\n", token.Code))
+
             case arguments.LeaderboardCommand.SubCommands["delete"].Name:
                 utils.ColoredPrint(31, "Hey you! ")
                 fmt.Println("This process cannot be reversed. Make sure there is nothing worth to lose before deleting.")
@@ -122,8 +125,15 @@ func main() {
 
                 api.DeleteLeaderboard(name)
                 utils.ColoredPrint(32, "Leaderboard deleted!\n")
+
             case arguments.LeaderboardCommand.SubCommands["leave"].Name:
                 api.LeaveLeaderboard(nthElOrInput("Leaderboard name", args.OtherCommands, 3))
+
+            case arguments.LeaderboardCommand.SubCommands["kick"].Name:
+                ldname := nthElOrInput("Leaderboard name", args.OtherCommands, 3)
+                uname := nthElOrInput("Username to kick", args.OtherCommands, 4)
+                api.KickMember(ldname, uname)
+                utils.ColoredPrint(32, "The member has been kicked!\n")
 
             default:
                 leaderboard := api.Leaderboard(nthElOrInput("Leaderboard name", args.OtherCommands, 2))

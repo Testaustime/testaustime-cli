@@ -74,6 +74,17 @@ func (a *Api) JoinLeaderboard(code string) {
     defer res.Body.Close()
 }
 
+func (a *Api) KickMember(leaderboardName, username string) {
+    reqJson, err := json.Marshal(map[string]string {
+        "user": username,
+    })
+    utils.Check(err)
+
+    res := a.postRequest(fmt.Sprintf("leaderboards/%s/kick", leaderboardName), reqJson)
+    verifyResponse(res, 200)
+    defer res.Body.Close()
+}
+
 func (a *Api) LeaveLeaderboard(name string) {
     res := a.postRequest(fmt.Sprintf("leaderboards/%s/leave", name), []byte{})
     verifyResponse(res, 200)
