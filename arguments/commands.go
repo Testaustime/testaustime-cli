@@ -12,6 +12,19 @@ type Command struct {
 	SubCommands map[string]SubCommand
 }
 
+var ExperimentalCommand = Command{
+    Name: "exper",
+    Info: "experimental features",
+    SubCommands: map[string]SubCommand{
+        "summary": {
+            Name: "summary",
+            Info: "show summary information",
+            SubCommands: map[string]SubCommand{},
+
+        },
+    },
+}
+
 var AccountCommand = Command{
 	Name: "account",
 	Info: "manage accounts",
@@ -161,6 +174,7 @@ var HelpCommand = Command{
 }
 
 var Commands = []Command{
+    ExperimentalCommand,
 	HelpCommand,
 	AccountCommand,
 	StatisticsCommand,

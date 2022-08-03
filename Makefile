@@ -7,6 +7,7 @@ identifier	= testaustime-cli
 
 install: build setup
 beforecommit: build clean
+	go mod tidy
 	go fmt ./...
 
 uninstall: clean
