@@ -148,7 +148,20 @@ var UserCommand = Command{
 	},
 }
 
+var HelpCommand = Command{
+    Name: "helpcmd",
+    Info: "show help menus for specific commands",
+    SubCommands: map[string]SubCommand{
+        "<command>": {
+            Name: "<command>",
+            Info: "show help menu for given command",
+            SubCommands: map[string]SubCommand{},
+        },
+    },
+}
+
 var Commands = []Command{
+    HelpCommand,
 	AccountCommand,
 	StatisticsCommand,
 	LeaderboardCommand,

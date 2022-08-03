@@ -20,7 +20,7 @@ func ShowLeaderboards(leaderboards apiengine.LeaderboardList) {
 
 func ShowLeaderboard(leaderboard apiengine.Leaderboard, highlightedUsername string) {
 	printField("Name", leaderboard.Name, 32)
-	printField("Invite", fmt.Sprintf("ttfic_%s", leaderboard.Invite), 37)
+	printField("Invite", fmt.Sprintf("ttlic_%s", leaderboard.Invite), 37)
 	printField("Creation time", leaderboard.CreationTime, 37)
 
 	if len(leaderboard.Members) == 0 {
@@ -31,7 +31,9 @@ func ShowLeaderboard(leaderboard apiengine.Leaderboard, highlightedUsername stri
 	utils.ColoredPrint(32, "\nMembers on this leaderboard\n")
 	for _, user := range leaderboard.SortMembersByTime() {
 		color := 37
-		if user.Username == highlightedUsername {
+		if user.Admin && user.Username == highlightedUsername {
+			color = 33
+        } else if user.Username == highlightedUsername {
 			color = 32
 		} else if user.Admin {
 			color = 31

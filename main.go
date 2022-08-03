@@ -30,6 +30,14 @@ func main() {
 	api := apiengine.New(token, cfg.ApiUrl, cfg.CaseInsensitiveFields)
 
 	switch args.Command {
+    case arguments.HelpCommand.Name:
+        for _, command := range arguments.Commands {
+            if args.SubCommand == command.Name {
+                arguments.CommandUsage(command)
+                break
+            }
+        }
+
 	case arguments.AccountCommand.Name:
 		switch args.SubCommand {
 
@@ -111,7 +119,7 @@ func main() {
 		case arguments.LeaderboardCommand.SubCommands["create"].Name:
 			name := nthElOrInput("Leaderboard name", args.OtherCommands, 3)
 			invite := api.NewLeaderboard(name)
-			utils.ColoredPrint(35, fmt.Sprintf("ttfic_%s\n", invite.Code))
+			utils.ColoredPrint(35, fmt.Sprintf("ttlic_%s\n", invite.Code))
 
 		case arguments.LeaderboardCommand.SubCommands["delete"].Name:
 			utils.ColoredPrint(31, "Hey you! ")
@@ -302,3 +310,4 @@ func nthElOrInput(prompt string, bla []string, n int) string {
 	}
 	return datahelper.AskInput(prompt)
 }
+
