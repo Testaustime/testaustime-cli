@@ -2,6 +2,7 @@ package main
 
 import (
 	"crypto/rand"
+	"errors"
 	"fmt"
 	"time"
 
@@ -110,8 +111,23 @@ func main() {
                 name := nthElOrInput("Leaderboard name", args.OtherCommands, 3)
                 token := api.NewLeaderboard(name)
                 utils.ColoredPrint(35, fmt.Sprintf("ttfic_%s\n", token.Code))
+            case arguments.LeaderboardCommand.SubCommands["delete"].Name:
+                utils.ColoredPrint(31, "Hey you! ")
+                fmt.Println("This process cannot be reversed. Make sure there is nothing worth to lose before deleting.")
+                name := nthElOrInput("Leaderboard name", args.OtherCommands, 3)
+                nameConfirm := datahelper.AskInput("Confirm leaderboard name to delete")
+                if name != nameConfirm {
+                    logger.Error(errors.New("The names don't match!"))
+                }
+
+                api.DeleteLeaderboard(name)
+                utils.ColoredPrint(32, "Leaderboard deleted!\n")
+            case arguments.LeaderboardCommand.SubCommands["leave"].Name:
+                api.LeaveLeaderboard(nthElOrInput("Leaderboard name", args.OtherCommands, 3))
+
             default:
-                arguments.CommandUsage(arguments.LeaderboardCommand)
+                leaderboard := api.Leaderboard(nthElOrInput("Leaderboard name", args.OtherCommands, 2))
+                datahelper.ShowLeaderboard(leaderboard)
         }
 
 	case arguments.StatisticsCommand.Name:

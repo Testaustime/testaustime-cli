@@ -33,7 +33,7 @@ This application doesn't collect any telemetries as of now
 ```sh
 git clone https://github.com/Testaustime/testaustime-cli
 cd testaustime-cli
-make install
+make install # install testaustime-cli on default destination
 
 testaustime --help
 ```
@@ -81,9 +81,12 @@ Show specific friend's coding statistics
 ### Leaderboards
 Show leaderboard data
 
-- Joined leaderboards
+- Show joined leaderboards
 - Create a new leaderboard
 - Join an existing leaderboard
+- Show data for a specific leaderboard
+- Leave from a leaderboard
+- Delete a leaderboard
 
 ## Contributing
 
