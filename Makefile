@@ -6,6 +6,7 @@ identifier	= testaustime-cli
 .PHONY: all lint test
 
 install: build setup
+beforecommit: build clean
 
 uninstall: clean
 	rm -rf \
