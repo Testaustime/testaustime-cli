@@ -33,7 +33,7 @@ func ShowLeaderboard(leaderboard apiengine.Leaderboard, highlightedUsername stri
 		color := 37
 		if user.Admin && user.Username == highlightedUsername {
 			color = 33
-        } else if user.Username == highlightedUsername {
+		} else if user.Username == highlightedUsername {
 			color = 32
 		} else if user.Admin {
 			color = 31

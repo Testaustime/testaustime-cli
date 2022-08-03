@@ -30,13 +30,13 @@ func main() {
 	api := apiengine.New(token, cfg.ApiUrl, cfg.CaseInsensitiveFields)
 
 	switch args.Command {
-    case arguments.HelpCommand.Name:
-        for _, command := range arguments.Commands {
-            if args.SubCommand == command.Name {
-                arguments.CommandUsage(command)
-                break
-            }
-        }
+	case arguments.HelpCommand.Name:
+		for _, command := range arguments.Commands {
+			if args.SubCommand == command.Name {
+				arguments.CommandUsage(command)
+				break
+			}
+		}
 
 	case arguments.AccountCommand.Name:
 		switch args.SubCommand {
@@ -310,4 +310,3 @@ func nthElOrInput(prompt string, bla []string, n int) string {
 	}
 	return datahelper.AskInput(prompt)
 }
-
