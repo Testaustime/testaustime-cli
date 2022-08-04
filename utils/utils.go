@@ -31,6 +31,11 @@ func ColoredPrint(color int, a ...any) {
 	fmt.Print(a...)
 }
 
+func HappyMessage(a ...any) {
+	ColoredPrint(32, "Good news, ")
+	fmt.Print(a...)
+}
+
 func NthElement(list []string, n int) string {
 	if n >= 0 && len(list) > n {
 		return list[n]

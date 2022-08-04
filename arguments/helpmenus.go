@@ -26,7 +26,7 @@ func CommandUsage(command Command) {
 // SubCommandUsage prints command usage for a specific command
 func SubCommandUsage(command Command, subcommand SubCommand) {
 	fmt.Print(
-		formatUsage(fmt.Sprintf("%s %s", command.Name, subcommand.Name), "[subcommand]"),
+		formatUsage(command.Name, "[subcommands]"),
 		"\n", flags(), "\n",
 		formatSubCommands(&subcommand.SubCommands),
 	)

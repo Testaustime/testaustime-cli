@@ -18,6 +18,10 @@ type ErrorResponse struct {
 	Err string `json:"error"`
 }
 
+type Settings struct {
+	PublicProfile any
+}
+
 // Login returns UserResponse which includes data what
 // was given in API response. If login fails, errResponse will
 // contain the reason for the failure.
@@ -121,4 +125,13 @@ func (a *Api) NewFriendcode() string {
 	utils.Check(json.NewDecoder(res.Body).Decode(&response))
 
 	return response.FriendCode
+}
+
+func (a *Api) UpdateSettings(settings Settings) {
+	reqJson, err := json.Marshal(settings)
+	utils.Check(err)
+
+	res := a.postRequest("account/settings", reqJson)
+	verifyResponse(res, 200)
+	defer res.Body.Close()
 }

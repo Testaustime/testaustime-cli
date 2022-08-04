@@ -13,16 +13,25 @@ type Command struct {
 }
 
 var ExperimentalCommand = Command{
-    Name: "exper",
-    Info: "experimental features",
-    SubCommands: map[string]SubCommand{
-        "summary": {
-            Name: "summary",
-            Info: "show summary information",
-            SubCommands: map[string]SubCommand{},
-
-        },
-    },
+	Name: "experimental",
+	Info: "experimental features",
+	SubCommands: map[string]SubCommand{
+		"summary": {
+			Name: "summary",
+			Info: "show summary information",
+		},
+		"settings": {
+			Name: "account",
+			Info: "edit account settings",
+			SubCommands: map[string]SubCommand{
+				"public": {
+					Name:        "setpublic",
+					Info:        "change your account's publicity state",
+					SubCommands: trueOrFalse,
+				},
+			},
+		},
+	},
 }
 
 var AccountCommand = Command{
@@ -75,34 +84,28 @@ var LeaderboardCommand = Command{
 	Info: "get leaderboards data",
 	SubCommands: map[string]SubCommand{
 		"<name>": {
-			Name:        "<name>",
-			Info:        "show a leaderboard",
-			SubCommands: map[string]SubCommand{},
+			Name: "<name>",
+			Info: "show a leaderboard",
 		},
 		"create": {
-			Name:        "create",
-			Info:        "create a leaderboard",
-			SubCommands: map[string]SubCommand{},
+			Name: "create",
+			Info: "create a leaderboard",
 		},
 		"delete": {
-			Name:        "delete",
-			Info:        "delete a leaderboard",
-			SubCommands: map[string]SubCommand{},
+			Name: "delete",
+			Info: "delete a leaderboard",
 		},
 		"join": {
-			Name:        "joinboard",
-			Info:        "join a leaderboard",
-			SubCommands: map[string]SubCommand{},
+			Name: "joinboard",
+			Info: "join a leaderboard",
 		},
 		"leave": {
-			Name:        "leave",
-			Info:        "leave a leaderboard",
-			SubCommands: map[string]SubCommand{},
+			Name: "leave",
+			Info: "leave a leaderboard",
 		},
 		"regenerate": {
-			Name:        "regenerate",
-			Info:        "regenerate a leaderboard invite token",
-			SubCommands: map[string]SubCommand{},
+			Name: "regenerate",
+			Info: "regenerate a leaderboard invite token",
 		},
 		"kick": {
 			Name: "kick",
@@ -113,9 +116,8 @@ var LeaderboardCommand = Command{
 					Info: "Leaderboard name",
 					SubCommands: map[string]SubCommand{
 						"<username>": {
-							Name:        "<username>",
-							Info:        "Member name",
-							SubCommands: map[string]SubCommand{},
+							Name: "<username>",
+							Info: "Member name",
 						},
 					},
 				},
@@ -166,21 +168,31 @@ var HelpCommand = Command{
 	Info: "show help menus for specific commands",
 	SubCommands: map[string]SubCommand{
 		"<command>": {
-			Name:        "<command>",
-			Info:        "show help menu for given command",
-			SubCommands: map[string]SubCommand{},
+			Name: "<command>",
+			Info: "show help menu for given command",
 		},
 	},
 }
 
+var trueOrFalse = map[string]SubCommand{
+	"on": {
+		Name: "on",
+		Info: "switch option on",
+	},
+	"off": {
+		Name: "off",
+		Info: "switch option off",
+	},
+}
+
 var Commands = []Command{
-    ExperimentalCommand,
 	HelpCommand,
 	AccountCommand,
 	StatisticsCommand,
 	LeaderboardCommand,
 	FriendsCommand,
 	UserCommand,
+	ExperimentalCommand,
 }
 
 var topSubCommand = SubCommand{

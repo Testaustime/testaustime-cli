@@ -30,20 +30,41 @@ func main() {
 	api := apiengine.New(token, cfg.ApiUrl, cfg.CaseInsensitiveFields)
 
 	switch args.Command {
-	case arguments.ExperimentalCommand.Name:
-        switch args.SubCommand {
-            case arguments.ExperimentalCommand.SubCommands["summary"].Name:
-                datahelper.ShowSummary(api.Summary(args.SubCommand))
-            default:
-                arguments.CommandUsage(arguments.ExperimentalCommand)
-        }
-
 	case arguments.HelpCommand.Name:
 		for _, command := range arguments.Commands {
 			if args.SubCommand == command.Name {
 				arguments.CommandUsage(command)
 				break
 			}
+		}
+
+	case arguments.ExperimentalCommand.Name:
+		cmd := arguments.ExperimentalCommand
+		switch args.SubCommand {
+		case arguments.ExperimentalCommand.SubCommands["summary"].Name:
+			datahelper.ShowSummary(api.Summary(args.SubCommand))
+
+		case arguments.ExperimentalCommand.SubCommands["settings"].Name:
+			switch utils.NthElement(args.OtherCommands, 2) {
+
+			case cmd.SubCommands["settings"].SubCommands["public"].Name:
+				wantedState := utils.NthElement(args.OtherCommands, 3)
+				possibleVals := cmd.SubCommands["settings"].SubCommands["public"].SubCommands
+				if wantedState == possibleVals["on"].Name || wantedState == possibleVals["off"].Name {
+					api.UpdateSettings(apiengine.Settings{
+						PublicProfile: wantedState == possibleVals["on"].Name,
+					})
+					utils.HappyMessage("your profile visibility has now been updated!\n")
+				} else {
+					arguments.SubCommandUsage(cmd, cmd.SubCommands["settings"].SubCommands["public"])
+				}
+
+			default:
+				arguments.SubCommandUsage(cmd, cmd.SubCommands["settings"])
+			}
+
+		default:
+			arguments.CommandUsage(arguments.ExperimentalCommand)
 		}
 
 	case arguments.AccountCommand.Name:
