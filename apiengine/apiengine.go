@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io"
 	"net/http"
 	"strings"
 	"time"
@@ -46,7 +47,11 @@ func verifyResponse(res *http.Response, wantedStatusCode int) {
 	}
 
 	var errResponse ErrorResponse
-	utils.Check(json.NewDecoder(res.Body).Decode(&errResponse))
+	err := json.NewDecoder(res.Body).Decode(&errResponse)
+	if err == io.EOF {
+		logger.Error(fmt.Errorf("Request failed (%d)", res.StatusCode))
+	}
+	utils.Check(err)
 
 	switch res.StatusCode {
 	case http.StatusUnauthorized:
