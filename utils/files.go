@@ -18,3 +18,15 @@ func ReadFile(file string, allowNonexistent bool) string {
 	Check(err)
 	return string(bytes)
 }
+
+func ReadToken(filename string) string {
+	file, err := os.Open(filename)
+	Check(err)
+	defer file.Close()
+
+	tokenBytes := make([]byte, 32)
+	_, err = file.Read(tokenBytes)
+	Check(err)
+
+	return string(tokenBytes)
+}
