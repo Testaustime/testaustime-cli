@@ -25,7 +25,7 @@ func main() {
 		"$HOME/.local/share",
 	), "token")
 
-	token := utils.ReadFile(tokenLocation, true)[:32]
+	token := utils.ReadToken(tokenLocation)
 
 	cfg := config.GetConfiguration(args.AlternateConfigFile)
 	api := apiengine.New(token, cfg.ApiUrl, cfg.CaseInsensitiveFields)
