@@ -11,8 +11,9 @@ import (
 )
 
 type topStats struct {
-	Name string
-	Time float32
+	Name      string
+	Time      float32
+	StartTime time.Time
 }
 
 type heartbeatStruct struct {
@@ -62,23 +63,22 @@ func (a *Api) calculateCodingStatistics(
 ) (codestats Statistics) {
 	timenow := time.Now()
 	for _, heartbeat := range rawdata {
+		// TODO: make this optional
 		if heartbeat.Duration == 0 {
 			continue
 		}
 
 		for _, x := range a.caseInsensitiveFields {
-			if x == "editorName" {
+			switch x {
+			case "editorName":
 				heartbeat.EditorName = strings.ToLower(heartbeat.EditorName)
-			} else if x == "projectName" {
+			case "projectName":
 				heartbeat.ProjectName = strings.ToLower(heartbeat.ProjectName)
 			}
 		}
 
 		parsedTime, err := time.Parse(ctLayout, heartbeat.StartTime)
 		utils.Check(err)
-		if since.Sub(parsedTime) > 0 {
-			continue
-		}
 
 		if shouldGetTopStatistics {
 			getTopLanguages(heartbeat, &codestats, since)
@@ -141,15 +141,19 @@ func getTop(
 	found := false
 	for i, itemStats := range items {
 		if *elName == itemStats.Name {
-			items[i].Time += float32(heartbeat.Duration / 60)
+			if since.Sub(parseTime(heartbeat.StartTime)) < 0 {
+				items[i].Time += float32(heartbeat.Duration / 60)
+			}
 			found = true
 			break
+
 		}
 	}
 	if !found {
 		items = append(items, topStats{
 			*elName,
 			float32(heartbeat.Duration / 60),
+			parseTime(heartbeat.StartTime),
 		})
 	}
 	items = items.SortByTime()

@@ -27,6 +27,14 @@ type Api struct {
 var MeasureTime bool = false
 var ctLayout string = "2006-01-02T15:04:05"
 
+// parseTime parses given string to time with api's default
+// time format.
+func parseTime(t string) time.Time {
+	res, err := time.Parse(ctLayout, t)
+	utils.Check(err)
+	return res
+}
+
 // New creates a new Api struct with given parameters.
 // if url is empty string, it will be replaced with
 // current production api server.
