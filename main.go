@@ -157,7 +157,7 @@ func main() {
 			name := nthElOrInput("Leaderboard name", args.OtherCommands, 3)
 			nameConfirm := datahelper.AskInput("Confirm leaderboard name to delete")
 			if name != nameConfirm {
-				logger.Error(errors.New("The names don't match!"))
+				logger.Error(errors.New("the names don't match"))
 			}
 
 			api.DeleteLeaderboard(name)
