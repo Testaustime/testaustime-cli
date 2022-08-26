@@ -36,13 +36,13 @@ func (a *Api) Friends() (friends Friends) {
 }
 
 // AddFriend adds a new friend
-func (a *Api) AddFriend(friendCode string) (friend Friend, errResponse ErrorResponse) {
+func (a *Api) AddFriend(friendCode string) (friend Friend) {
 	res := a.postRequest("friends/add", []byte(friendCode))
-	verifyResponse(res, 200)
+    verifyResponse(res, 200)
 	defer res.Body.Close()
 
 	utils.Check(json.NewDecoder(res.Body).Decode(&friend))
-	return friend, errResponse
+	return friend
 }
 
 // RemoveFriend removes a friend

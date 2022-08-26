@@ -35,9 +35,10 @@ func main() {
 		for _, command := range arguments.Commands {
 			if args.SubCommand == command.Name {
 				arguments.CommandUsage(command)
-				break
+				return
 			}
 		}
+        arguments.Usage()
 
 	case arguments.ExperimentalCommand.Name:
 		cmd := arguments.ExperimentalCommand
@@ -245,12 +246,9 @@ func main() {
 			datahelper.ShowFriends(friends.AddSelf(myaccount).PastMonth())
 
 		case arguments.FriendsCommand.SubCommands["add"].Name:
-			friendcode := nthElOrInput("Friend code", args.OtherCommands, 2)
-			friend, err := api.AddFriend(friendcode)
-			if err.Err != "" {
-				printErr(31, "Friend left unadded", err.Err)
-				return
-			}
+			friendcode := nthElOrInput("Friend code", args.OtherCommands, 3)
+			friend := api.AddFriend(friendcode)
+
 			utils.ColoredPrint(32, "Friend added!\n")
 			datahelper.ShowFriend(friend)
 

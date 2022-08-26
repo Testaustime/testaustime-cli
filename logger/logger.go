@@ -17,6 +17,10 @@ func Error(err error) {
 	os.Exit(1)
 }
 
+func SmallError(str string) {
+    logMessage(errLogger, fmt.Sprint(coloredType("oops!", 31), str))
+}
+
 func Info(message string) {
 	logMessage(errLogger, fmt.Sprint(
 		coloredType("news!", 32),
