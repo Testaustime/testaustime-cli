@@ -23,7 +23,7 @@ setup:
 	cp ./example.toml ~/.config/$(identifier)/config.toml
 	mv $(BINARY) $(HOME)/.local/bin
 
-build: test lint
+build: test 
 	$(GO) build -o $(BINARY)
 
 test:
